@@ -16,5 +16,7 @@ namespace dotnet5_webapp.Data
 
         public DbSet<Contact> Contacts { get; set; }
 
+        public DbSet<dotnet5_webapp.Models.User> User { get; set; }
+
     }
 }

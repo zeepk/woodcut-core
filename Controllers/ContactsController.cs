@@ -47,30 +47,16 @@ namespace dotnet5_webapp.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutContact(int id, Contact contact)
         {
-            if (id != contact.Id)
-            {
-                return BadRequest();
-            }
+            var dbContact = await _context.Contacts.FindAsync(id);
 
-            _context.Entry(contact).State = EntityState.Modified;
-
-            try
+            if (dbContact == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ContactExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            dbContact = contact;
+            // here you can replace the entire object, or only certain fields
+            await _context.SaveChangesAsync();
+            return Ok(dbContact);
         }
 
         // POST: api/Contacts
@@ -97,7 +83,7 @@ namespace dotnet5_webapp.Controllers
             _context.Contacts.Remove(contact);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(_context.Contacts);
         }
 
         private bool ContactExists(int id)
