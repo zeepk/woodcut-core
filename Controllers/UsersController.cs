@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using dotnet5_webapp.Data;
 using dotnet5_webapp.Models;
+using dotnet5_webapp.Services;
 
 namespace dotnet5_webapp.Controllers
 {
@@ -14,10 +15,12 @@ namespace dotnet5_webapp.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly IUserService UserService;
         private readonly DataContext _context;
 
-        public UsersController(DataContext context)
+        public UsersController(IUserService userService, DataContext context)
         {
+            UserService = userService;
             _context = context;
         }
 
@@ -25,6 +28,7 @@ namespace dotnet5_webapp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
+            var testMessage = await UserService.TestFunction();
             return await _context.User.ToListAsync();
         }
 
