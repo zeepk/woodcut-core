@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dotnet5_webapp.Data;
 
 namespace dotnet5_webapp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210106060005_AddStatRecordUserId")]
+    partial class AddStatRecordUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,61 +51,6 @@ namespace dotnet5_webapp.Migrations
                     b.ToTable("Contacts");
                 });
 
-            modelBuilder.Entity("dotnet5_webapp.Models.Minigame", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("MinigameId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StatRecordId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StatRecordId");
-
-                    b.ToTable("Minigame");
-                });
-
-            modelBuilder.Entity("dotnet5_webapp.Models.Skill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SkillId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StatRecordId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Xp")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StatRecordId");
-
-                    b.ToTable("Skill");
-                });
-
             modelBuilder.Entity("dotnet5_webapp.Models.StatRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -116,6 +63,9 @@ namespace dotnet5_webapp.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -145,20 +95,6 @@ namespace dotnet5_webapp.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("dotnet5_webapp.Models.Minigame", b =>
-                {
-                    b.HasOne("dotnet5_webapp.Models.StatRecord", null)
-                        .WithMany("Minigames")
-                        .HasForeignKey("StatRecordId");
-                });
-
-            modelBuilder.Entity("dotnet5_webapp.Models.Skill", b =>
-                {
-                    b.HasOne("dotnet5_webapp.Models.StatRecord", null)
-                        .WithMany("Skills")
-                        .HasForeignKey("StatRecordId");
-                });
-
             modelBuilder.Entity("dotnet5_webapp.Models.StatRecord", b =>
                 {
                     b.HasOne("dotnet5_webapp.Models.User", null)
@@ -166,13 +102,6 @@ namespace dotnet5_webapp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("dotnet5_webapp.Models.StatRecord", b =>
-                {
-                    b.Navigation("Minigames");
-
-                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("dotnet5_webapp.Models.User", b =>

@@ -28,7 +28,6 @@ namespace dotnet5_webapp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            var testMessage = await UserService.TestFunction();
             return await _context.User.ToListAsync();
         }
 
@@ -37,15 +36,33 @@ namespace dotnet5_webapp.Controllers
         public async Task<ActionResult<User>> GetUser(int id)
         {
             var user = await _context.User.FindAsync(id);
+            List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == id).ToListAsync();
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.StatRecords = statRecords;
+
+            return user;
+        }
+
+        // PUT: api/Users/update/5
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateUser(int id)
+        {
+            var user = await _context.User.FindAsync(id);
+            var newStatRecord = await UserService.AddNewStatRecord(user);
+            await _context.SaveChangesAsync();
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
-        }
+            return Ok(newStatRecord);
 
+        }
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -74,7 +91,8 @@ namespace dotnet5_webapp.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(user);
+
         }
 
         // POST: api/Users

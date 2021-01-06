@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+// dotnet ef migrations add InitialCreate
+// dotnet ef database update
+
 namespace dotnet5_webapp
 {
     public class Program

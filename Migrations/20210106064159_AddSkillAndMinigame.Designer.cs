@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dotnet5_webapp.Data;
 
 namespace dotnet5_webapp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210106064159_AddSkillAndMinigame")]
+    partial class AddSkillAndMinigame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,8 +96,8 @@ namespace dotnet5_webapp.Migrations
                     b.Property<int?>("StatRecordId")
                         .HasColumnType("int");
 
-                    b.Property<long>("Xp")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Xp")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
