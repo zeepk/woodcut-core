@@ -34,20 +34,28 @@ namespace dotnet5_webapp.Controllers
 
         // GET: api/Users/5
         // returns specific user and their records
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        [HttpGet("{username}")]
+        public async Task<ActionResult<User>> GetUser(string username)
         {
-            var user = await _context.User.FindAsync(id);
-            List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == id).ToListAsync();
+            //TODO: if user not found, run a function that will create one if found, or return 404 if not in official API
+            var user = await _context.User.FirstOrDefaultAsync(user => user.Username == username);
+            if (user == null)
+            {
+                var newUser = await UserService.CreateNewUser(username);
+                if (newUser == null)
+                {
+                    return NotFound();
+                }
+                _context.User.Add(newUser);
+                await _context.SaveChangesAsync();
+                return newUser;
+            }
+            List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == user.Id).ToListAsync();
             for (int i = 0; i < statRecords.Count; i++)
             {
                 List<Skill> skills = await _context.Skill.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
                 List<Minigame> minigames = await _context.Minigame.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
 
-            }
-            if (user == null)
-            {
-                return NotFound();
             }
             user.StatRecords = statRecords;
 
@@ -56,17 +64,17 @@ namespace dotnet5_webapp.Controllers
 
         // PUT: api/Users/update/5
         // add a new record to the specified user
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUser(int id)
+        [HttpPut("update/{username}")]
+        public async Task<IActionResult> UpdateUser(string username)
         {
-            var user = await _context.User.FindAsync(id);
-            var newStatRecord = await UserService.AddNewStatRecord(user);
-            await _context.SaveChangesAsync();
-
+            var user = await _context.User.FirstOrDefaultAsync(user => user.Username == username);
             if (user == null)
             {
                 return NotFound();
             }
+            var newStatRecord = await UserService.AddNewStatRecord(user);
+            await _context.SaveChangesAsync();
+
 
             return Ok(newStatRecord);
 

@@ -12,18 +12,21 @@ namespace dotnet5_webapp.Services
     {
         static string _address = Constants.RunescapeApiBaseUrl;
         static int _totalSkills = Constants.TotalSkills + 1;
-        private string result;
-        //TODO: function that checks rs api and returns a response object { date, stats, minigames, username, etc... }
-        private async Task<StatRecord> CreateStatRecord(User user)
+        private async Task<String> OfficialApiCall(String username)
         {
             // API call
             var client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(_address + user.Username);
+            HttpResponseMessage response = await client.GetAsync(_address + username);
             response.EnsureSuccessStatusCode();
-            result = await response.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+        private async Task<StatRecord> CreateStatRecord(User user)
+        {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            string[] lines = result.Split('\n');
+            var apiData = await OfficialApiCall(user.Username);
+            string[] lines = apiData.Split('\n');
 
             // adding a StatRecord object
             StatRecord newStatRecord = new StatRecord()
@@ -72,6 +75,34 @@ namespace dotnet5_webapp.Services
             List<StatRecord> newList = new List<StatRecord> { newStatRecord };
             user.StatRecords = newList;
             return newStatRecord;
+        }
+        public async Task<User> CreateNewUser(String username)
+        {
+            // if the user is not found in the Official API, this will error out
+            // var apiData = await OfficialApiCall(username);
+
+            // creating new user
+            User newUser = new User()
+            {
+                DateCreated = DateTime.Now,
+                Username = username,
+                DisplayName = username.Replace('+', ' ')
+            };
+
+            try
+            {
+                // creating an initial stat record
+                var newStatRecord = await CreateStatRecord(newUser);
+                List<StatRecord> newList = new List<StatRecord> { newStatRecord };
+                newUser.StatRecords = newList;
+            }
+            catch
+            {
+                newUser = null;
+            }
+
+
+            return newUser;
         }
     }
 }
