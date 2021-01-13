@@ -18,6 +18,8 @@ namespace dotnet5_webapp.Data
 
         public DbSet<dotnet5_webapp.Models.StatRecord> StatRecord { get; set; }
         public DbSet<dotnet5_webapp.Models.User> User { get; set; }
+        public DbSet<dotnet5_webapp.Models.Skill> Skill { get; set; }
+        public DbSet<dotnet5_webapp.Models.Minigame> Minigame { get; set; }
 
     }
 }
