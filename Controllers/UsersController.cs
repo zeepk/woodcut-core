@@ -27,10 +27,22 @@ namespace dotnet5_webapp.Controllers
         // GET: api/Users
         // returns all users and their records
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public ActionResult<User> GetUser()
         {
-            return await _context.User.ToListAsync();
+            User newUser = new User()
+            {
+                DateCreated = DateTime.Now,
+                Username = "username",
+                DisplayName = "displayname"
+            };
+            return Ok(newUser);
         }
+
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        // {
+        //     return await _context.User.ToListAsync();
+        // }
 
         // GET: api/Users/5
         // returns specific user and their records
