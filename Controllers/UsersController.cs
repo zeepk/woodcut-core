@@ -76,6 +76,24 @@ namespace dotnet5_webapp.Controllers
             return user;
         }
 
+        // PUT: api/Users/updateall
+        // add a new record to each user
+        [HttpPut("updateall")]
+        public async Task<IActionResult> UpdateAllUsers()
+        {
+            var users = await _context.User.ToListAsync();
+            if (users == null)
+            {
+                return NotFound();
+            }
+            var updatedUsers = UserService.AddNewStatRecordForAllUsers(users);
+            await _context.SaveChangesAsync();
+
+
+            return Ok(updatedUsers);
+
+        }
+
         // PUT: api/Users/update/5
         // add a new record to the specified user
         [HttpPut("update/{username}")]

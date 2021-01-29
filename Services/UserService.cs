@@ -76,6 +76,13 @@ namespace dotnet5_webapp.Services
             user.StatRecords = newList;
             return newStatRecord;
         }
+        public List<String> AddNewStatRecordForAllUsers(List<User> users)
+        {
+            // var newStatRecord = await CreateStatRecord(user);
+            // List<StatRecord> newList = new List<StatRecord> { newStatRecord };
+            // user.StatRecords = newList;
+            return users.Select(o => o.Username).ToList();
+        }
         public async Task<User> CreateNewUser(String username)
         {
             // if the user is not found in the Official API, this will error out
