@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using dotnet5_webapp.Data;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace dotnet5_webapp.Controllers
 {
@@ -26,13 +27,16 @@ namespace dotnet5_webapp.Controllers
 
         // GET: api/Users
         // returns all users and their records
+
+        public IConfiguration Configuration { get; }
+
         [HttpGet]
         public ActionResult<User> GetUser()
         {
             User newUser = new User()
             {
                 DateCreated = DateTime.Now,
-                Username = "username",
+                Username = Configuration.GetConnectionString("DefaultConnection").Substring(0, 15),
                 DisplayName = "displayname"
             };
             return Ok(newUser);
@@ -44,7 +48,7 @@ namespace dotnet5_webapp.Controllers
         //     return await _context.User.ToListAsync();
         // }
 
-        // GET: api/Users/5
+        // GET: api/Users/zee+pk
         // returns specific user and their records
         [HttpGet("{username}")]
         public async Task<ActionResult<User>> GetUser(string username)
