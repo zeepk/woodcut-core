@@ -32,7 +32,6 @@ namespace dotnet5_webapp
         {
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             // services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetValue<String>("DefaultConnection")));
-            services.BuildServiceProvider().GetService<DataContext>().Database.Migrate();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
