@@ -28,15 +28,13 @@ namespace dotnet5_webapp.Controllers
         // GET: api/Users
         // returns all users and their records
 
-        public IConfiguration Configuration { get; }
-
         [HttpGet]
         public ActionResult<User> GetUser()
         {
             User newUser = new User()
             {
                 DateCreated = DateTime.Now,
-                Username = Configuration.GetConnectionString("DefaultConnection").Substring(0, 15),
+                Username = "username",
                 DisplayName = "displayname"
             };
             return Ok(newUser);
