@@ -30,6 +30,10 @@ namespace dotnet5_webapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             // services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetValue<String>("DefaultConnection")));
             services.AddControllers();

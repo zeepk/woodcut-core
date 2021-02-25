@@ -9,6 +9,7 @@ namespace dotnet5_webapp.Models
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; }
         public DateTime DateCreated { get; set; }
         public List<Skill> Skills { get; set; }
         public List<Minigame> Minigames { get; set; }

@@ -33,6 +33,7 @@ namespace dotnet5_webapp.Services
             {
                 DateCreated = DateTime.Now,
                 UserId = user.Id,
+                User = user
             };
 
             // looping through the skills and adding them
@@ -72,15 +73,18 @@ namespace dotnet5_webapp.Services
         public async Task<StatRecord> AddNewStatRecord(User user)
         {
             var newStatRecord = await CreateStatRecord(user);
-            List<StatRecord> newList = new List<StatRecord> { newStatRecord };
-            user.StatRecords = newList;
+            user.StatRecords.Add(newStatRecord);
+            //List<StatRecord> newList = new List<StatRecord> { newStatRecord };
+            //user.StatRecords = newList;
             return newStatRecord;
         }
         public List<String> AddNewStatRecordForAllUsers(List<User> users)
         {
-            // var newStatRecord = await CreateStatRecord(user);
-            // List<StatRecord> newList = new List<StatRecord> { newStatRecord };
-            // user.StatRecords = newList;
+            users.ForEach(async u =>
+            {
+                await CreateStatRecord(u);
+            });
+
             return users.Select(o => o.Username).ToList();
         }
         public async Task<User> CreateNewUser(String username)

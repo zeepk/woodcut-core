@@ -52,7 +52,8 @@ namespace dotnet5_webapp.Controllers
         public async Task<ActionResult<User>> GetUser(string username)
         {
             //TODO: if user not found, run a function that will create one if found, or return 404 if not in official API
-            var user = await _context.User.FirstOrDefaultAsync(user => user.Username == username);
+            var users = _context.User.Include(u => u.StatRecords);
+            var user = await users.FirstOrDefaultAsync(user => user.Username == username);
             if (user == null)
             {
                 var newUser = await UserService.CreateNewUser(username);
@@ -64,14 +65,15 @@ namespace dotnet5_webapp.Controllers
                 await _context.SaveChangesAsync();
                 return newUser;
             }
-            List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == user.Id).ToListAsync();
-            for (int i = 0; i < statRecords.Count; i++)
-            {
-                List<Skill> skills = await _context.Skill.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
-                List<Minigame> minigames = await _context.Minigame.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
 
-            }
-            user.StatRecords = statRecords;
+            //List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == user.Id).ToListAsync();
+            //for (int i = 0; i < statRecords.Count; i++)
+            //{
+            //    List<Skill> skills = await _context.Skill.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
+            //    List<Minigame> minigames = await _context.Minigame.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
+
+            //}
+            //user.StatRecords = statRecords;
 
             return user;
         }
@@ -99,7 +101,8 @@ namespace dotnet5_webapp.Controllers
         [HttpPut("update/{username}")]
         public async Task<IActionResult> UpdateUser(string username)
         {
-            var user = await _context.User.FirstOrDefaultAsync(user => user.Username == username);
+            var users = _context.User.Include(u => u.StatRecords);
+            var user = await users.FirstOrDefaultAsync(user => user.Username == username);
             if (user == null)
             {
                 return NotFound();
