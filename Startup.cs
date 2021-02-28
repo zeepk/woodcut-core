@@ -4,6 +4,8 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using dotnet5_webapp.Data;
+using dotnet5_webapp.Models;
+using dotnet5_webapp.Repos;
 using dotnet5_webapp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +32,7 @@ namespace dotnet5_webapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -41,7 +44,8 @@ namespace dotnet5_webapp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "dotnet5_webapp", Version = "v1" });
             });
-            services.AddSingleton<IUserService, UserService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepo, UserRepo>();
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
    {
        builder.AllowAnyOrigin()

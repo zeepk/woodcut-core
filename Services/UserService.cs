@@ -3,15 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using dotnet5_webapp.Internal;
 using dotnet5_webapp.Models;
+using dotnet5_webapp.Repos;
 using dotnet5_webapp.Utils;
 
 namespace dotnet5_webapp.Services
 {
     public class UserService : IUserService
     {
+        private readonly IUserRepo _UserRepo;
         static string _address = Constants.RunescapeApiBaseUrl;
         static int _totalSkills = Constants.TotalSkills + 1;
+
+        public UserService(IUserRepo userRepo)
+        {
+            _UserRepo = userRepo;
+        }
+
         private async Task<String> OfficialApiCall(String username)
         {
             // API call
@@ -21,6 +30,8 @@ namespace dotnet5_webapp.Services
             var result = await response.Content.ReadAsStringAsync();
             return result;
         }
+
+
         private async Task<StatRecord> CreateStatRecord(User user)
         {
             List<Skill> skills = new List<Skill>();
@@ -70,6 +81,16 @@ namespace dotnet5_webapp.Services
 
             return newStatRecord;
         }
+
+        public async Task<UserSearchResponse> SearchForUser(String username)
+        {
+            var response = new UserSearchResponse();
+            var user = await _UserRepo.GetUserByUsername(username);
+            response.User = user;
+            response.WasCreated = true;
+            return response;
+        }
+
         public async Task<StatRecord> AddNewStatRecord(User user)
         {
             var newStatRecord = await CreateStatRecord(user);
@@ -78,6 +99,7 @@ namespace dotnet5_webapp.Services
             //user.StatRecords = newList;
             return newStatRecord;
         }
+
         public List<String> AddNewStatRecordForAllUsers(List<User> users)
         {
             users.ForEach(async u =>
@@ -87,6 +109,7 @@ namespace dotnet5_webapp.Services
 
             return users.Select(o => o.Username).ToList();
         }
+
         public async Task<User> CreateNewUser(String username)
         {
             // if the user is not found in the Official API, this will error out

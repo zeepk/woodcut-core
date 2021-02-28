@@ -9,6 +9,7 @@ using dotnet5_webapp.Data;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Services;
 using Microsoft.Extensions.Configuration;
+using dotnet5_webapp.Internal;
 
 namespace dotnet5_webapp.Controllers
 {
@@ -28,43 +29,43 @@ namespace dotnet5_webapp.Controllers
         // GET: api/Users
         // returns all users and their records
 
-        [HttpGet]
-        public ActionResult<User> GetUser()
-        {
-            User newUser = new User()
-            {
-                DateCreated = DateTime.Now,
-                Username = "username",
-                DisplayName = "displayname"
-            };
-            return Ok(newUser);
-        }
+        //[HttpGet]
+        //public ActionResult<User> GetUser()
+        //{
+        //    User newUser = new User()
+        //    {
+        //        DateCreated = DateTime.Now,
+        //        Username = "username",
+        //        DisplayName = "displayname"
+        //    };
+        //    return Ok(newUser);
+        //}
 
-        // [HttpGet]
-        // public async Task<ActionResult<IEnumerable<User>>> GetUser()
-        // {
-        //     return await _context.User.ToListAsync();
-        // }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        {
+            return await _context.User.ToListAsync();
+        }
 
         // GET: api/Users/zee+pk
         // returns specific user and their records
         [HttpGet("{username}")]
-        public async Task<ActionResult<User>> GetUser(string username)
+        public async Task<ActionResult<UserSearchResponse>> GetUser(string username)
         {
             //TODO: if user not found, run a function that will create one if found, or return 404 if not in official API
-            var users = _context.User.Include(u => u.StatRecords);
-            var user = await users.FirstOrDefaultAsync(user => user.Username == username);
-            if (user == null)
-            {
-                var newUser = await UserService.CreateNewUser(username);
-                if (newUser == null)
-                {
-                    return NotFound();
-                }
-                _context.User.Add(newUser);
-                await _context.SaveChangesAsync();
-                return newUser;
-            }
+            //var users = _context.User.Include(u => u.StatRecords);
+            //var user = await users.FirstOrDefaultAsync(user => user.Username == username);
+            //if (user == null)
+            //{
+            //    var newUser = await UserService.CreateNewUser(username);
+            //    if (newUser == null)
+            //    {
+            //        return NotFound();
+            //    }
+            //    _context.User.Add(newUser);
+            //    await _context.SaveChangesAsync();
+            //    return newUser;
+            //}
 
             //List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == user.Id).ToListAsync();
             //for (int i = 0; i < statRecords.Count; i++)
@@ -74,8 +75,8 @@ namespace dotnet5_webapp.Controllers
 
             //}
             //user.StatRecords = statRecords;
-
-            return user;
+            var response = await UserService.SearchForUser(username);
+            return Ok(response);
         }
 
         // PUT: api/Users/updateall
