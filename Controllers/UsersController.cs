@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,15 +85,8 @@ namespace dotnet5_webapp.Controllers
         [HttpPut("updateall")]
         public async Task<IActionResult> UpdateAllUsers()
         {
-            var users = await _context.User.ToListAsync();
-            if (users == null)
-            {
-                return NotFound();
-            }
-            var updatedUsers = UserService.AddNewStatRecordForAllUsers(users);
-            await _context.SaveChangesAsync();
 
-
+            var updatedUsers = await UserService.AddNewStatRecordForAllUsers();
             return Ok(updatedUsers);
 
         }

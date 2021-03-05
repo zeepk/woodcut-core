@@ -100,14 +100,25 @@ namespace dotnet5_webapp.Services
             return newStatRecord;
         }
 
-        public List<String> AddNewStatRecordForAllUsers(List<User> users)
+        public async Task<List<String>> AddNewStatRecordForAllUsers()
         {
-            users.ForEach(async u =>
-            {
-                await CreateStatRecord(u);
-            });
+            var users = await _UserRepo.GetAllUsers();
+            
+            var tasks = users.ToList().Select(i => CreateStatRecord(i));
+            var results = await Task.WhenAll(tasks);
 
-            return users.Select(o => o.Username).ToList();
+            var moreTasks = results.ToList().Select(async r => await _UserRepo.AddStatRecordToUser(r));
+            var usersResponse = await Task.WhenAll(moreTasks);
+
+            var usernames = usersResponse.ToList().Select(u => u.Username);
+            // users.ForEach(async u =>
+            // {
+            //     var newStatRecord = await CreateStatRecord(u);
+            //     var user = await _UserRepo.AddStatRecordToUser(newStatRecord);
+            //     usersResponse.Add(user.Username);
+            // });
+
+            return usernames.ToList();
         }
 
         public async Task<User> CreateNewUser(String username)

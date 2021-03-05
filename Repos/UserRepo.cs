@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dotnet5_webapp.Data;
@@ -15,8 +17,25 @@ namespace dotnet5_webapp.Repos
 
         public async Task<User> GetUserByUsername(string username)
         {
-            var user = await Context.User.FirstOrDefaultAsync(u => u.Username == username);
+            var user = await Context.User.Include(u => u.StatRecords).ThenInclude(r => r.Skills.OrderBy(s => s.SkillId)).FirstOrDefaultAsync(u => u.Username == username);
             return user;
+        }
+        
+        public async Task<User> AddStatRecordToUser(StatRecord statRecord)
+        {
+            var user = await Context.User.Include(u => u.StatRecords).FirstOrDefaultAsync(u => u.Username == statRecord.User.Username);
+            // if (user != null && user.StatRecords != null)
+            // {
+            //     user.StatRecords.Add(statRecord);
+            // }
+            user.StatRecords.Add(statRecord);
+            await Context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            return await Context.User.ToListAsync();
         }
     
     }

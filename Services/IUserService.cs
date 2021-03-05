@@ -9,7 +9,7 @@ namespace dotnet5_webapp.Services
     public interface IUserService
     {
         Task<StatRecord> AddNewStatRecord(User user);
-        List<String> AddNewStatRecordForAllUsers(List<User> users);
+        Task<List<String>> AddNewStatRecordForAllUsers();
         Task<User> CreateNewUser(String username);
         Task<UserSearchResponse> SearchForUser(String username);
     }
