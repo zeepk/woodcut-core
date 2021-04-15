@@ -87,8 +87,12 @@ namespace dotnet5_webapp.Services
         {
             var response = new UserSearchResponse();
             var user = await _UserRepo.GetUserByUsername(username);
+            response.WasCreated = user == null;
+            if (user == null)
+            {
+                user = await CreateNewUser(username);
+            }
             response.User = user;
-            response.WasCreated = true;
             return response;
         }
 
@@ -123,20 +127,20 @@ namespace dotnet5_webapp.Services
                 Username = username,
                 DisplayName = username.Replace('+', ' ')
             };
+            var user = await _UserRepo.SaveChanges(newUser);
 
             try
             {
                 // creating an initial stat record
                 var newStatRecord = await CreateStatRecord(newUser);
-                List<StatRecord> newList = new List<StatRecord> { newStatRecord };
-                newUser.StatRecords = newList;
+                var updatedUser = await _UserRepo.SaveChanges(newUser);
+                Console.WriteLine(updatedUser.StatRecords.FirstOrDefault().Skills.FirstOrDefault().Xp);
             }
             catch
             {
+                Console.WriteLine($"Error adding initial stat record to new user with username {username}");
                 newUser = null;
             }
-
-
             return newUser;
         }
     }

@@ -53,29 +53,6 @@ namespace dotnet5_webapp.Controllers
         [HttpGet("{username}")]
         public async Task<ActionResult<UserSearchResponse>> GetUser(string username)
         {
-            //TODO: if user not found, run a function that will create one if found, or return 404 if not in official API
-            //var users = _context.User.Include(u => u.StatRecords);
-            //var user = await users.FirstOrDefaultAsync(user => user.Username == username);
-            //if (user == null)
-            //{
-            //    var newUser = await UserService.CreateNewUser(username);
-            //    if (newUser == null)
-            //    {
-            //        return NotFound();
-            //    }
-            //    _context.User.Add(newUser);
-            //    await _context.SaveChangesAsync();
-            //    return newUser;
-            //}
-
-            //List<StatRecord> statRecords = await _context.StatRecord.Where(r => r.UserId == user.Id).ToListAsync();
-            //for (int i = 0; i < statRecords.Count; i++)
-            //{
-            //    List<Skill> skills = await _context.Skill.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
-            //    List<Minigame> minigames = await _context.Minigame.Where(s => s.StatRecordId == statRecords[i].Id).ToListAsync();
-
-            //}
-            //user.StatRecords = statRecords;
             var response = await UserService.SearchForUser(username);
             return Ok(response);
         }

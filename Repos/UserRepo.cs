@@ -17,7 +17,7 @@ namespace dotnet5_webapp.Repos
 
         public async Task<User> GetUserByUsername(string username)
         {
-            var user = await Context.User.Include(u => u.StatRecords).ThenInclude(r => r.Skills.OrderBy(s => s.SkillId)).FirstOrDefaultAsync(u => u.Username == username);
+            var user = await Context.User.Where(u => u.Username == username).Include(u => u.StatRecords).ThenInclude(r => r.Skills.OrderBy(s => s.SkillId)).FirstOrDefaultAsync();
             return user;
         }
         
