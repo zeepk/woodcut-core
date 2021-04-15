@@ -79,6 +79,7 @@ namespace dotnet5_webapp.Services
             newStatRecord.Skills = skills;
             newStatRecord.Minigames = minigames;
 
+            user.StatRecords.Add(newStatRecord);
             return newStatRecord;
         }
 
@@ -94,9 +95,6 @@ namespace dotnet5_webapp.Services
         public async Task<StatRecord> AddNewStatRecord(User user)
         {
             var newStatRecord = await CreateStatRecord(user);
-            user.StatRecords.Add(newStatRecord);
-            //List<StatRecord> newList = new List<StatRecord> { newStatRecord };
-            //user.StatRecords = newList;
             return newStatRecord;
         }
 
@@ -104,20 +102,10 @@ namespace dotnet5_webapp.Services
         {
             var users = await _UserRepo.GetAllUsers();
             
-            var tasks = users.ToList().Select(i => CreateStatRecord(i));
-            var results = await Task.WhenAll(tasks);
-
-            var moreTasks = results.ToList().Select(async r => await _UserRepo.AddStatRecordToUser(r));
-            var usersResponse = await Task.WhenAll(moreTasks);
-
-            var usernames = usersResponse.ToList().Select(u => u.Username);
-            // users.ForEach(async u =>
-            // {
-            //     var newStatRecord = await CreateStatRecord(u);
-            //     var user = await _UserRepo.AddStatRecordToUser(newStatRecord);
-            //     usersResponse.Add(user.Username);
-            // });
-
+            var tasks = users.ToList().Select(CreateStatRecord);
+            await Task.WhenAll(tasks);
+            
+            var usernames = users.ToList().Select(u => u.Username);
             return usernames.ToList();
         }
 

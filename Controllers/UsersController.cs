@@ -82,7 +82,7 @@ namespace dotnet5_webapp.Controllers
 
         // PUT: api/Users/updateall
         // add a new record to each user
-        [HttpPut("updateall")]
+        [HttpPost("updateall")]
         public async Task<IActionResult> UpdateAllUsers()
         {
 

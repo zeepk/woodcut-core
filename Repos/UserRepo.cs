@@ -35,7 +35,9 @@ namespace dotnet5_webapp.Repos
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await Context.User.ToListAsync();
+            return await Context.User
+                .Include(u => u.StatRecords)
+                .ToListAsync();
         }
     
     }
