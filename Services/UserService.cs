@@ -78,8 +78,8 @@ namespace dotnet5_webapp.Services
 
             newStatRecord.Skills = skills;
             newStatRecord.Minigames = minigames;
-
             user.StatRecords.Add(newStatRecord);
+            // var updatedUser = await _UserRepo.AddStatRecordToUser(newStatRecord);
             return newStatRecord;
         }
 
@@ -102,10 +102,12 @@ namespace dotnet5_webapp.Services
         {
             var users = await _UserRepo.GetAllUsers();
             
-            var tasks = users.ToList().Select(CreateStatRecord);
+            var tasks = users.ToList().Select(u => CreateStatRecord(u));
             await Task.WhenAll(tasks);
             
             var usernames = users.ToList().Select(u => u.Username);
+
+            var user = await _UserRepo.SaveChanges(users.FirstOrDefault());
             return usernames.ToList();
         }
 

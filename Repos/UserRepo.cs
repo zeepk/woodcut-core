@@ -24,11 +24,12 @@ namespace dotnet5_webapp.Repos
         public async Task<User> AddStatRecordToUser(StatRecord statRecord)
         {
             var user = await Context.User.Include(u => u.StatRecords).FirstOrDefaultAsync(u => u.Username == statRecord.User.Username);
-            // if (user != null && user.StatRecords != null)
-            // {
-            //     user.StatRecords.Add(statRecord);
-            // }
             user.StatRecords.Add(statRecord);
+            await Context.SaveChangesAsync();
+            return user;
+        }        
+        public async Task<User> SaveChanges(User user)
+        {
             await Context.SaveChangesAsync();
             return user;
         }
