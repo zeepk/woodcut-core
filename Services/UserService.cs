@@ -87,10 +87,14 @@ namespace dotnet5_webapp.Services
         {
             var response = new UserSearchResponse();
             var user = await _UserRepo.GetUserByUsername(username);
-            response.WasCreated = user == null;
             if (user == null)
             {
                 user = await CreateNewUser(username);
+                response.WasCreated = user != null;
+            }
+            else
+            {
+                response.WasCreated = false;
             }
             response.User = user;
             return response;
@@ -111,37 +115,36 @@ namespace dotnet5_webapp.Services
             
             var usernames = users.ToList().Select(u => u.Username);
 
+            // don't really need to pass a user, but await doesn't work well with methods which return void
             var user = await _UserRepo.SaveChanges(users.FirstOrDefault());
             return usernames.ToList();
         }
 
         public async Task<User> CreateNewUser(String username)
         {
-            // if the user is not found in the Official API, this will error out
-            // var apiData = await OfficialApiCall(username);
-
             // creating new user
             User newUser = new User()
             {
                 DateCreated = DateTime.Now,
                 Username = username,
-                DisplayName = username.Replace('+', ' ')
+                DisplayName = username.Replace('+', ' '),
+                StatRecords = new List<StatRecord>()
             };
-            var user = await _UserRepo.SaveChanges(newUser);
-
+            
+            // if the user is not found in the Official API, this will error out
             try
             {
                 // creating an initial stat record
                 var newStatRecord = await CreateStatRecord(newUser);
-                var updatedUser = await _UserRepo.SaveChanges(newUser);
-                Console.WriteLine(updatedUser.StatRecords.FirstOrDefault().Skills.FirstOrDefault().Xp);
             }
             catch
             {
                 Console.WriteLine($"Error adding initial stat record to new user with username {username}");
-                newUser = null;
+                return null;
             }
-            return newUser;
+            
+            var user = await _UserRepo.CreateUser(newUser);
+            return user;
         }
     }
 }

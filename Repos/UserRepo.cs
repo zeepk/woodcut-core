@@ -27,6 +27,12 @@ namespace dotnet5_webapp.Repos
             user.StatRecords.Add(statRecord);
             await Context.SaveChangesAsync();
             return user;
+        }               
+        public async Task<User> CreateUser(User user)
+        {
+            await Context.User.AddAsync(user);
+            await Context.SaveChangesAsync();
+            return user;
         }        
         public async Task<User> SaveChanges(User user)
         {

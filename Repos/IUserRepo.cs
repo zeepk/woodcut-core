@@ -10,6 +10,7 @@ namespace dotnet5_webapp.Repos
     {
         Task<User> GetUserByUsername(string username);
         Task<User> AddStatRecordToUser(StatRecord statRecord);
+        Task<User> CreateUser(User user);
         Task<User> SaveChanges(User user);
         Task<List<User>> GetAllUsers();
     }
