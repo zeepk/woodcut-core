@@ -145,6 +145,20 @@ namespace dotnet5_webapp.Services
             
             var user = await _UserRepo.CreateUser(newUser);
             return user;
+        }        
+        public async Task<User> CurrentGainForUser(String username)
+        {
+            var user = await _UserRepo.GetUserByUsername(username);
+            if (user == null)
+            {
+                // handle nonexistent user
+                return null;
+            }
+            // get most recent record for day record
+            // most recent sunday record
+            // most recent 1st of month
+            // most recent 1st of jan
+            return user;
         }
     }
 }
