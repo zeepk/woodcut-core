@@ -32,7 +32,7 @@ namespace dotnet5_webapp.Services
         }
 
 
-        private async Task<StatRecord> CreateStatRecord(User user)
+        public async Task CreateStatRecord(User user)
         {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
@@ -80,7 +80,7 @@ namespace dotnet5_webapp.Services
             newStatRecord.Minigames = minigames;
             user.StatRecords.Add(newStatRecord);
             // var updatedUser = await _UserRepo.AddStatRecordToUser(newStatRecord);
-            return newStatRecord;
+            // return newStatRecord;
         }
 
         public async Task<UserSearchResponse> SearchForUser(String username)
@@ -98,12 +98,6 @@ namespace dotnet5_webapp.Services
             }
             response.User = user;
             return response;
-        }
-
-        public async Task<StatRecord> AddNewStatRecord(User user)
-        {
-            var newStatRecord = await CreateStatRecord(user);
-            return newStatRecord;
         }
 
         public async Task<List<String>> AddNewStatRecordForAllUsers()
@@ -135,7 +129,7 @@ namespace dotnet5_webapp.Services
             try
             {
                 // creating an initial stat record
-                var newStatRecord = await CreateStatRecord(newUser);
+                await CreateStatRecord(newUser);
             }
             catch
             {
@@ -146,7 +140,7 @@ namespace dotnet5_webapp.Services
             var user = await _UserRepo.CreateUser(newUser);
             return user;
         }        
-        public async Task<User> CurrentGainForUser(String username)
+        public async Task<ICollection<CurrentGainForUserServiceResponse>> CurrentGainForUser(String username)
         {
             var user = await _UserRepo.GetUserByUsername(username);
             if (user == null)
@@ -154,11 +148,13 @@ namespace dotnet5_webapp.Services
                 // handle nonexistent user
                 return null;
             }
+
+            var response = new List<CurrentGainForUserServiceResponse>();
             // get most recent record for day record
             // most recent sunday record
             // most recent 1st of month
             // most recent 1st of jan
-            return user;
+            return response;
         }
     }
 }

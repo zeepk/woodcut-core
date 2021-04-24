@@ -71,7 +71,7 @@ namespace dotnet5_webapp.Controllers
         // PUT: api/Users/update/5
         // add a new record to the specified user
         [HttpPut("update/{username}")]
-        public async Task<IActionResult> UpdateUser(string username)
+        public async Task<ActionResult<User>> UpdateUser(string username)
         {
             var users = _context.User.Include(u => u.StatRecords);
             var user = await users.FirstOrDefaultAsync(user => user.Username == username);
@@ -79,11 +79,11 @@ namespace dotnet5_webapp.Controllers
             {
                 return NotFound();
             }
-            var newStatRecord = await UserService.AddNewStatRecord(user);
+            await UserService.CreateStatRecord(user);
             await _context.SaveChangesAsync();
 
 
-            return Ok(newStatRecord);
+            return Ok(user);
 
         }
 

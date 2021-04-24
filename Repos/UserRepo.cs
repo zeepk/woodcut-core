@@ -46,6 +46,10 @@ namespace dotnet5_webapp.Repos
                 .Include(u => u.StatRecords)
                 .ToListAsync();
         }
+        public async Task<StatRecord> GetYesterdayRecord(int userId)
+        {
+            return await Context.StatRecord.Where(r => r.UserId == userId).FirstOrDefaultAsync();
+        }
     
     }
 }
