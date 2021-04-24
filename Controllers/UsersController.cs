@@ -56,6 +56,15 @@ namespace dotnet5_webapp.Controllers
             var response = await UserService.SearchForUser(username);
             return Ok(response);
         }
+        
+        // GET: api/Users/gains/zee+pk
+        // returns specific user and their records
+        [HttpGet("gains/{username}")]
+        public async Task<ActionResult<CurrentGainForUserServiceResponse>> GetGainsForUser(string username)
+        {
+            var response = await UserService.CurrentGainForUser(username);
+            return Ok(response);
+        }
 
         // PUT: api/Users/updateall
         // add a new record to each user

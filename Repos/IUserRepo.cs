@@ -13,5 +13,6 @@ namespace dotnet5_webapp.Repos
         Task<User> CreateUser(User user);
         Task<User> SaveChanges(User user);
         Task<List<User>> GetAllUsers();
+        Task<StatRecord> GetYesterdayRecord(int userId);
     }
 }

@@ -48,7 +48,7 @@ namespace dotnet5_webapp.Repos
         }
         public async Task<StatRecord> GetYesterdayRecord(int userId)
         {
-            return await Context.StatRecord.Where(r => r.UserId == userId).FirstOrDefaultAsync();
+            return await Context.StatRecord.Where(r => r.UserId == userId).OrderByDescending(r => r.DateCreated).FirstOrDefaultAsync();
         }
     
     }

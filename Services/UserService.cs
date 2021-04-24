@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using dotnet5_webapp.Internal;
+using dotnet5_webapp.Migrations;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Repos;
 using dotnet5_webapp.Utils;
@@ -29,6 +30,43 @@ namespace dotnet5_webapp.Services
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             return result;
+        }
+
+        private async Task<(ICollection<Skill>, ICollection<Minigame>)> GetCurrentStats(String username)
+        {
+            List<Skill> skills = new List<Skill>();
+            List<Minigame> minigames = new List<Minigame>();
+            var apiData = await OfficialApiCall(username);
+            string[] lines = apiData.Split('\n');
+
+            // looping through the skills and adding them
+            for (int i = 0; i < _totalSkills; i++)
+            {
+                String[] stat = lines[i].Split(',');
+                Skill skill = new Skill()
+                {
+                    SkillId = i,
+                    Xp = Int64.Parse(stat[2]),
+                    Level = Int32.Parse(stat[1]),
+                    Rank = Int32.Parse(stat[0]),
+                };
+                skills.Add(skill);
+            }
+
+            // looping through the minigames and adding them
+            for (int i = _totalSkills; i < lines.Length - 1; i++)
+            {
+                String[] stat = lines[i].Split(',');
+                Minigame minigame = new Minigame()
+                {
+                    MinigameId = i,
+                    Score = Int32.Parse(stat[1]),
+                    Rank = Int32.Parse(stat[0]),
+                };
+                minigames.Add(minigame);
+            }
+
+            return (skills, minigames);
         }
 
 
@@ -140,7 +178,7 @@ namespace dotnet5_webapp.Services
             var user = await _UserRepo.CreateUser(newUser);
             return user;
         }        
-        public async Task<ICollection<CurrentGainForUserServiceResponse>> CurrentGainForUser(String username)
+        public async Task<CurrentGainForUserServiceResponse> CurrentGainForUser(String username)
         {
             var user = await _UserRepo.GetUserByUsername(username);
             if (user == null)
@@ -149,11 +187,53 @@ namespace dotnet5_webapp.Services
                 return null;
             }
 
-            var response = new List<CurrentGainForUserServiceResponse>();
+            var response = new CurrentGainForUserServiceResponse();
+            response.Username = username;
+            
+            var skillGains = new List<SkillGain>();
+            var minigameGains = new List<MinigameGain>();
+            // get current stats to show
+            var (currentSkills, currentMinigames) = await GetCurrentStats(username);
             // get most recent record for day record
+            var dayRecord = await _UserRepo.GetYesterdayRecord(user.Id);
             // most recent sunday record
             // most recent 1st of month
             // most recent 1st of jan
+                
+            // calculate gainz
+            for (var i = 0; i < _totalSkills; i++)
+            {
+                var skillGain = new SkillGain();
+                var currentSkill = currentSkills.ElementAt(i);
+                var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                skillGain.SkillId = currentSkill.SkillId;
+                skillGain.Xp = currentSkill.Xp;
+                skillGain.Level = currentSkill.Level;
+                skillGain.Rank = currentSkill.Rank;
+                skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
+                skillGain.WeekGain = 0;
+                skillGain.MonthGain = 0;
+                skillGain.YearGain = 0;
+                skillGains.Add(skillGain);
+            }
+            for (int i = _totalSkills; i < currentMinigames.Count - 1; i++)
+            {
+                var minigameGain = new MinigameGain();
+                var currentMinigame = currentMinigames.ElementAt(i);
+                var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                minigameGain.MinigameId = currentMinigame.MinigameId;
+                minigameGain.Score = currentMinigame.Score;
+                minigameGain.Rank = currentMinigame.Rank;
+                minigameGain.DayGain = currentMinigame.Score - dayMinigame.Score;
+                minigameGain.WeekGain = 0;
+                minigameGain.MonthGain = 0;
+                minigameGain.YearGain = 0;
+                minigameGains.Add(minigameGain);
+            }
+
+            response.SkillGains = skillGains;
+            response.MinigameGains = minigameGains;
+            
             return response;
         }
     }
