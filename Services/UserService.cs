@@ -204,7 +204,34 @@ namespace dotnet5_webapp.Services
             // get current stats to show
             var (currentSkills, currentMinigames) = await GetCurrentStats(username);
             // get most recent record for day record
+            // var dayTask = _UserRepo.GetYesterdayRecord(user.Id); 
+            // var weekTask = _UserRepo.GetWeekRecord(user.Id);
+            // var monthTask = _UserRepo.GetMonthRecord(user.Id);
+            // var yearTask = _UserRepo.GetYearRecord(user.Id);
+            
+            // await Task.WhenAll(dayTask, weekTask, monthTask, yearTask);
+
             var dayRecord = await _UserRepo.GetYesterdayRecord(user.Id);
+            var weekRecord = await _UserRepo.GetWeekRecord(user.Id);
+            // var monthRecord = await _UserRepo.GetMonthRecord(user.Id);
+            // var yearRecord = await _UserRepo.GetYearRecord(user.Id);
+            // var tasks = new List<Task>
+            // {
+            //     _UserRepo.GetYesterdayRecord(user.Id), 
+            //     _UserRepo.GetWeekRecord(user.Id),
+            //     _UserRepo.GetMonthRecord(user.Id),
+            //     _UserRepo.GetYearRecord(user.Id),
+            // };
+            // // var dayRecord = await _UserRepo.GetYesterdayRecord(user.Id);
+            // var continuation = Task.WhenAll(tasks);
+            // try
+            // {
+            //     continuation.Wait();
+            // }
+            // catch (AggregateException)
+            // {
+            //     return response;
+            // }
             // most recent sunday record
             // most recent 1st of month
             // most recent 1st of jan
@@ -215,12 +242,13 @@ namespace dotnet5_webapp.Services
                 var skillGain = new SkillGain();
                 var currentSkill = currentSkills.ElementAt(i);
                 var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                 skillGain.SkillId = currentSkill.SkillId;
                 skillGain.Xp = currentSkill.Xp;
                 skillGain.Level = currentSkill.Level;
                 skillGain.Rank = currentSkill.Rank;
                 skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
-                skillGain.WeekGain = 0;
+                skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
                 skillGain.MonthGain = 0;
                 skillGain.YearGain = 0;
                 skillGains.Add(skillGain);
@@ -230,11 +258,12 @@ namespace dotnet5_webapp.Services
                 var minigameGain = new MinigameGain();
                 var currentMinigame = currentMinigames.ElementAt(i);
                 var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
                 minigameGain.MinigameId = currentMinigame.MinigameId;
                 minigameGain.Score = currentMinigame.Score;
                 minigameGain.Rank = currentMinigame.Rank;
                 minigameGain.DayGain = currentMinigame.Score - dayMinigame.Score;
-                minigameGain.WeekGain = 0;
+                minigameGain.WeekGain = currentMinigame.Score - weekMinigame.Score;
                 minigameGain.MonthGain = 0;
                 minigameGain.YearGain = 0;
                 minigameGains.Add(minigameGain);
