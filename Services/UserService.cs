@@ -38,7 +38,6 @@ namespace dotnet5_webapp.Services
             List<Minigame> minigames = new List<Minigame>();
             var apiData = await OfficialApiCall(username);
             string[] lines = apiData.Split('\n');
-
             // looping through the skills and adding them
             for (int i = 0; i < _totalSkills; i++)
             {
@@ -50,6 +49,11 @@ namespace dotnet5_webapp.Services
                     Level = Int32.Parse(stat[1]),
                     Rank = Int32.Parse(stat[0]),
                 };
+                
+                // round instances of -1 to 0 instead
+                skill.Xp = skill.Xp < 0 ? 0 : skill.Xp;
+                skill.Rank = skill.Rank < 0 ? 0 : skill.Rank;
+                
                 skills.Add(skill);
             }
 
@@ -63,6 +67,11 @@ namespace dotnet5_webapp.Services
                     Score = Int32.Parse(stat[1]),
                     Rank = Int32.Parse(stat[0]),
                 };
+                
+                // round instances of -1 to 0 instead
+                minigame.Score = minigame.Score < 0 ? 0 : minigame.Score;
+                minigame.Rank = minigame.Rank < 0 ? 0 : minigame.Rank;
+
                 minigames.Add(minigame);
             }
 
@@ -86,7 +95,7 @@ namespace dotnet5_webapp.Services
             };
 
             // looping through the skills and adding them
-            for (int i = 0; i < _totalSkills; i++)
+            for (var i = 0; i < _totalSkills; i++)
             {
                 String[] stat = lines[i].Split(',');
                 Skill skill = new Skill()
@@ -101,7 +110,7 @@ namespace dotnet5_webapp.Services
             }
 
             // looping through the minigames and adding them
-            for (int i = _totalSkills; i < lines.Length - 1; i++)
+            for (var i = _totalSkills; i < lines.Length - 1; i++)
             {
                 String[] stat = lines[i].Split(',');
                 Minigame minigame = new Minigame()
@@ -216,7 +225,7 @@ namespace dotnet5_webapp.Services
                 skillGain.YearGain = 0;
                 skillGains.Add(skillGain);
             }
-            for (int i = _totalSkills; i < currentMinigames.Count - 1; i++)
+            for (var i = 0; i < currentMinigames.Count - 1; i++)
             {
                 var minigameGain = new MinigameGain();
                 var currentMinigame = currentMinigames.ElementAt(i);

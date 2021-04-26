@@ -77,9 +77,9 @@ namespace dotnet5_webapp.Controllers
 
         }
 
-        // PUT: api/Users/update/5
+        // PUT: api/Users/update/zee+pk
         // add a new record to the specified user
-        [HttpPut("update/{username}")]
+        [HttpPost("update/{username}")]
         public async Task<ActionResult<User>> UpdateUser(string username)
         {
             var users = _context.User.Include(u => u.StatRecords);
