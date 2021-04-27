@@ -68,11 +68,25 @@ namespace dotnet5_webapp.Repos
         }        
         public async Task<StatRecord> GetMonthRecord(int userId)
         {
-            return await Context.StatRecord.Where(r => r.UserId == userId).OrderByDescending(r => r.DateCreated).FirstOrDefaultAsync();
+            var today = DateTime.Today;
+            var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+            var record = await Context.StatRecord.Where(r => r.UserId == userId && r.DateCreated > firstDayOfMonth)
+                .OrderBy(r => r.DateCreated)
+                .Include(r => r.Skills.OrderBy(s => s.SkillId))
+                .Include(r => r.Minigames.OrderBy(s => s.MinigameId))
+                .FirstOrDefaultAsync();
+            return record;
         }        
         public async Task<StatRecord> GetYearRecord(int userId)
         {
-            return await Context.StatRecord.Where(r => r.UserId == userId).OrderByDescending(r => r.DateCreated).FirstOrDefaultAsync();
+            var today = DateTime.Today;
+            var firstDayOfYear = new DateTime(today.Year, 1, 1);
+            var record = await Context.StatRecord.Where(r => r.UserId == userId && r.DateCreated > firstDayOfYear)
+                .OrderBy(r => r.DateCreated)
+                .Include(r => r.Skills.OrderBy(s => s.SkillId))
+                .Include(r => r.Minigames.OrderBy(s => s.MinigameId))
+                .FirstOrDefaultAsync();
+            return record;
         }
     }
 }
