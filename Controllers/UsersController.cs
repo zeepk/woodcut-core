@@ -11,6 +11,7 @@ using dotnet5_webapp.Models;
 using dotnet5_webapp.Services;
 using Microsoft.Extensions.Configuration;
 using dotnet5_webapp.Internal;
+using Microsoft.AspNetCore.Cors;
 
 namespace dotnet5_webapp.Controllers
 {
@@ -59,6 +60,7 @@ namespace dotnet5_webapp.Controllers
         
         // GET: api/Users/gains/zee+pk
         // returns specific user and their records
+        [EnableCors("MyPolicy")]
         [HttpGet("gains/{username}")]
         public async Task<ActionResult<CurrentGainForUserServiceResponse>> GetGainsForUser(string username)
         {

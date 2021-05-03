@@ -107,6 +107,8 @@ namespace dotnet5_webapp.Services
                     Rank = Int32.Parse(stat[0]),
                     StatRecordId = newStatRecord.Id
                 };
+                skill.Xp = skill.Xp < 0 ? 0 : skill.Xp;
+                skill.Rank = skill.Rank < 0 ? 0 : skill.Rank;
                 skills.Add(skill);
             }
 
@@ -121,6 +123,8 @@ namespace dotnet5_webapp.Services
                     Rank = Int32.Parse(stat[0]),
                     StatRecordId = newStatRecord.Id
                 };
+                minigame.Score = minigame.Score < 0 ? 0 : minigame.Score;
+                minigame.Rank = minigame.Rank < 0 ? 0 : minigame.Rank;
                 minigames.Add(minigame);
             }
 
@@ -231,7 +235,15 @@ namespace dotnet5_webapp.Services
                 var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                 var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                 var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                
+
+                if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
+                {
+                    daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
+                    weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
+                    monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
+                    yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
+                }
+
                 skillGain.SkillId = currentSkill.SkillId;
                 skillGain.Xp = currentSkill.Xp;
                 skillGain.Level = currentSkill.Level;
@@ -251,6 +263,14 @@ namespace dotnet5_webapp.Services
                 var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
                 var monthMinigame = monthRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
                 var yearMinigame = yearRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                
+                if (dayMinigame.Score < 0 || weekMinigame.Score < 0 || monthMinigame.Score < 0 || yearMinigame.Score < 0)
+                {
+                    dayMinigame.Score = dayMinigame.Score < 0 ? 0 : dayMinigame.Score;
+                    weekMinigame.Score = weekMinigame.Score < 0 ? 0 : weekMinigame.Score;
+                    monthMinigame.Score = monthMinigame.Score < 0 ? 0 : monthMinigame.Score;
+                    yearMinigame.Score = yearMinigame.Score < 0 ? 0 : yearMinigame.Score;
+                }
                 
                 minigameGain.MinigameId = currentMinigame.MinigameId;
                 minigameGain.Score = currentMinigame.Score;
