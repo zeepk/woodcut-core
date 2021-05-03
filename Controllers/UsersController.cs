@@ -60,7 +60,6 @@ namespace dotnet5_webapp.Controllers
         
         // GET: api/Users/gains/zee+pk
         // returns specific user and their records
-        [EnableCors("MyPolicy")]
         [HttpGet("gains/{username}")]
         public async Task<ActionResult<CurrentGainForUserServiceResponse>> GetGainsForUser(string username)
         {
