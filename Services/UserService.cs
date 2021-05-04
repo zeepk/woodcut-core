@@ -236,13 +236,13 @@ namespace dotnet5_webapp.Services
                 var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                 var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
 
-                // if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
-                // {
-                //     daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
-                //     weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
-                //     monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
-                //     yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
-                // }
+                if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
+                {
+                    daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
+                    weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
+                    monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
+                    yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
+                }
 
                 skillGain.SkillId = currentSkill.SkillId;
                 skillGain.Xp = currentSkill.Xp;
