@@ -1,4 +1,6 @@
-﻿namespace dotnet5_webapp.Configuration
+﻿using System.Collections.Generic;
+
+namespace dotnet5_webapp.Configuration
 {
     public class AuthResult
     {
