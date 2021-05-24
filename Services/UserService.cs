@@ -214,6 +214,7 @@ namespace dotnet5_webapp.Services
             
             var skillGains = new List<SkillGain>();
             var minigameGains = new List<MinigameGain>();
+            var badges = new List<String>();
             
             // get current stats to show and compare to records
             var (currentSkills, currentMinigames) = await GetCurrentStats(username);
@@ -281,9 +282,41 @@ namespace dotnet5_webapp.Services
                 minigameGain.YearGain = currentMinigame.Score - yearMinigame.Score;
                 minigameGains.Add(minigameGain);
             }
+            
+            // add appropriate badges
+
+            var lowestLevel = skillGains.Min(sg => sg.Level);
+            // this is without invention
+            var lowestNonEliteLevel = skillGains.Where(sg => sg.SkillId != 27).Min(sg => sg.Level);
+
+            if (skillGains.FirstOrDefault().Xp == 5600000000)
+            {
+                badges.Add("maxxp");
+            }            
+            else if (skillGains.Min(sg => sg.Xp) >= 104273167 && skillGains[27].Xp > 80618654)
+            {
+                badges.Add("120all");
+            }
+            else if (skillGains.FirstOrDefault().Level == 2898)
+            {
+                badges.Add("maxtotal");
+            }
+            else if (lowestLevel >= 99)
+            {
+                badges.Add("maxed");
+            }            
+            else
+            {
+                var baseLevel = lowestNonEliteLevel /= 10;
+                if (baseLevel > 0)
+                {
+                    badges.Add("base" + baseLevel);
+                }
+            }
 
             response.SkillGains = skillGains;
             response.MinigameGains = minigameGains;
+            response.Badges = badges;
             response.DisplayName = user.DisplayName;
             
             return response;

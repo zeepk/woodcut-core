@@ -10,5 +10,6 @@ namespace dotnet5_webapp.Internal
         public String? StatusMessage { get; set; }
         public ICollection<SkillGain>? SkillGains { get; set; }
         public ICollection<MinigameGain>? MinigameGains { get; set; }
+        public ICollection<String>? Badges { get; set; }
     }
 }
