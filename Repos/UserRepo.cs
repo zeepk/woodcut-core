@@ -58,8 +58,8 @@ namespace dotnet5_webapp.Repos
         }        
         public async Task<StatRecord> GetWeekRecord(int userId)
         {
-            var sunday = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-            var record = await Context.StatRecord.Where(r => r.UserId == userId && r.DateCreated > sunday)
+            var sunday = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1);
+            var record = await Context.StatRecord.Where(r => r.UserId == userId && r.DateCreated >= sunday)
                 .OrderBy(r => r.DateCreated)
                 .Include(r => r.Skills.OrderBy(s => s.SkillId))
                 .Include(r => r.Minigames.OrderBy(s => s.MinigameId))

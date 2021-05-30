@@ -246,7 +246,7 @@ namespace dotnet5_webapp.Services
             var weekRecord = await _UserRepo.GetWeekRecord(user.Id);
             var monthRecord = await _UserRepo.GetMonthRecord(user.Id);
             var yearRecord = await _UserRepo.GetYearRecord(user.Id);
-                
+
             // calculate gainz
             for (var i = 0; i < _totalSkills; i++)
             {
