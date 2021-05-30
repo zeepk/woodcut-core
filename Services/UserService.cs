@@ -27,8 +27,16 @@ namespace dotnet5_webapp.Services
         {
             // API call
             var client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(_address + username);
-            response.EnsureSuccessStatusCode();
+            var response = new HttpResponseMessage();
+            response = await client.GetAsync(_address + username);
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
             var result = await response.Content.ReadAsStringAsync();
             return result;
         }
@@ -38,6 +46,10 @@ namespace dotnet5_webapp.Services
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
             var apiData = await OfficialApiCall(username);
+            if (apiData == null)
+            {
+                return (null, null);
+            }
             string[] lines = apiData.Split('\n');
             // looping through the skills and adding them
             for (int i = 0; i < _totalSkills; i++)
@@ -85,6 +97,10 @@ namespace dotnet5_webapp.Services
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
             var apiData = await OfficialApiCall(user.Username);
+            if (apiData == null)
+            {
+                return;
+            }
             string[] lines = apiData.Split('\n');
 
             // adding a StatRecord object
@@ -218,6 +234,12 @@ namespace dotnet5_webapp.Services
             
             // get current stats to show and compare to records
             var (currentSkills, currentMinigames) = await GetCurrentStats(username);
+
+            if (currentMinigames == null || currentSkills == null)
+            {
+                response.StatusMessage = "User not found.";
+                return response;
+            }
 
             // get records for yesterday, sunday, month start, and year start
             var dayRecord = await _UserRepo.GetYesterdayRecord(user.Id);
