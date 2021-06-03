@@ -230,7 +230,7 @@ namespace dotnet5_webapp.Services
             
             var skillGains = new List<SkillGain>();
             var minigameGains = new List<MinigameGain>();
-            var badges = new List<String>();
+            var badges = new List<Constants.BadgeType>();
             
             // get current stats to show and compare to records
             var (currentSkills, currentMinigames) = await GetCurrentStats(username);
@@ -311,28 +311,28 @@ namespace dotnet5_webapp.Services
             // this is without invention
             var lowestNonEliteLevel = skillGains.Where(sg => sg.SkillId != 27).Min(sg => sg.Level);
 
-            if (skillGains.FirstOrDefault().Xp == 5600000000)
+            if (skillGains.FirstOrDefault().Xp == Constants.MaxXp)
             {
-                badges.Add("maxxp");
+                badges.Add(Constants.BadgeType.MaxXp);
             }            
             else if (skillGains.Min(sg => sg.Xp) >= 104273167 && skillGains[27].Xp > 80618654)
             {
-                badges.Add("120all");
+                badges.Add(Constants.BadgeType.All120);
             }
-            else if (skillGains.FirstOrDefault().Level == 2898)
+            else if (skillGains.FirstOrDefault().Level == Constants.MaxTotal)
             {
-                badges.Add("maxtotal");
+                badges.Add(Constants.BadgeType.MaxTotal);
             }
             else if (lowestLevel >= 99)
             {
-                badges.Add("maxed");
+                badges.Add(Constants.BadgeType.Maxed);
             }            
             else
             {
-                var baseLevel = lowestNonEliteLevel /= 10;
+                var baseLevel = (lowestNonEliteLevel /= 10) * 10;
                 if (baseLevel > 0)
                 {
-                    badges.Add("base" + baseLevel);
+                    badges.Add((Constants.BadgeType) baseLevel);
                 }
             }
 
