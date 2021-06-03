@@ -156,6 +156,13 @@ namespace dotnet5_webapp.Controllers
 
             return NoContent();
         }
+        
+        [HttpGet("playercount")]
+        public async Task<ActionResult<CurrentGainForUserServiceResponse>> GetPlayerCount()
+        {
+            var response = await UserService.CurrentPlayerCount();
+            return Ok(response);
+        }
 
         private bool UserExists(int id)
         {

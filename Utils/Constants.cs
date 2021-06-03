@@ -8,6 +8,9 @@ namespace dotnet5_webapp.Utils
     {
 
         public const string RunescapeApiBaseUrl = "https://secure.runescape.com/m=hiscore/index_lite.ws?player=";
+        public const string RunescapeApiPlayerDetailsUrlPre = "https://secure.runescape.com/m=website-data/playerDetails.ws?names=%5B%22";
+        public const string RunescapeApiPlayerDetailsUrlPost = "%22%5D&callback=jQuery000000000000000_0000000000&_=0";
+        public const string RunescapeApiPlayerCount = "http://www.runescape.com/player_count.js?varname=iPlayerCount&callback=jQuery000000000000000_0000000000&_=0";
         public const int TotalSkills = 28;
         public const long MaxXp = 5600000000;
         public const int MaxTotal = 2898;

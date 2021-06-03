@@ -13,5 +13,6 @@ namespace dotnet5_webapp.Services
         Task<User> CreateNewUser(String username);
         Task<UserSearchResponse> SearchForUser(String username);
         Task<CurrentGainForUserServiceResponse> CurrentGainForUser(String username);
+        Task<int> CurrentPlayerCount();
     }
 }

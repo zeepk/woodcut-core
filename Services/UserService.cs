@@ -16,6 +16,7 @@ namespace dotnet5_webapp.Services
     {
         private readonly IUserRepo _UserRepo;
         static string _address = Constants.RunescapeApiBaseUrl;
+        static string _playerCountAddress = Constants.RunescapeApiPlayerCount;
         static int _totalSkills = Constants.TotalSkills + 1;
 
         public UserService(IUserRepo userRepo)
@@ -91,6 +92,29 @@ namespace dotnet5_webapp.Services
             return (skills, minigames);
         }
 
+        public async Task<int> CurrentPlayerCount()
+        {
+            var client = new HttpClient();
+            var response = new HttpResponseMessage();
+            int result;
+            response = await client.GetAsync(_playerCountAddress);
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+            var outputString = await response.Content.ReadAsStringAsync();
+            outputString = outputString.Split('(', ')')[1];
+            bool isParsable = Int32.TryParse(outputString, out result);
+            if (!isParsable)
+            {
+                result = 0;
+            }
+            return result;
+        }
 
         public async Task CreateStatRecord(User user)
         {
