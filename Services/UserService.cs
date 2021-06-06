@@ -4,11 +4,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using dotnet5_webapp.Internal;
-using dotnet5_webapp.Migrations;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Repos;
 using dotnet5_webapp.Utils;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace dotnet5_webapp.Services
 {
@@ -24,12 +23,12 @@ namespace dotnet5_webapp.Services
             _UserRepo = userRepo;
         }
 
-        private async Task<String> OfficialApiCall(String username)
+        private async Task<String> OfficialApiCall(String url)
         {
             // API call
             var client = new HttpClient();
             var response = new HttpResponseMessage();
-            response = await client.GetAsync(_address + username);
+            response = await client.GetAsync(url);
             try
             {
                 response.EnsureSuccessStatusCode();
@@ -40,13 +39,13 @@ namespace dotnet5_webapp.Services
             }
             var result = await response.Content.ReadAsStringAsync();
             return result;
-        }
-
+        }                
+        
         private async Task<(ICollection<Skill>, ICollection<Minigame>)> GetCurrentStats(String username)
         {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            var apiData = await OfficialApiCall(username);
+            var apiData = await OfficialApiCall(_address + username);
             if (apiData == null)
             {
                 return (null, null);
@@ -94,19 +93,8 @@ namespace dotnet5_webapp.Services
 
         public async Task<int> CurrentPlayerCount()
         {
-            var client = new HttpClient();
-            var response = new HttpResponseMessage();
             int result;
-            response = await client.GetAsync(_playerCountAddress);
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (Exception e)
-            {
-                return 0;
-            }
-            var outputString = await response.Content.ReadAsStringAsync();
+            var outputString = await OfficialApiCall(_playerCountAddress);
             outputString = outputString.Split('(', ')')[1];
             bool isParsable = Int32.TryParse(outputString, out result);
             if (!isParsable)
@@ -115,12 +103,96 @@ namespace dotnet5_webapp.Services
             }
             return result;
         }
+        
+        public async Task<List<Activity>> GetAllActivities()
+        {
+            return await _UserRepo.GetAllActivities();
+        }
+        
+        public async Task<ResponseWrapper<PlayerDetailsServiceResponse>> GetPlayerDetails(string username)
+        {
+            var data = new PlayerDetailsServiceResponse();
+            var apiData = "";
+            try
+            {
+            apiData = await OfficialApiCall(Constants.RunescapeApiPlayerDetailsUrlPre + username + Constants.RunescapeApiPlayerDetailsUrlPost);
+            var apiItems = apiData.Remove(0, 33).Split("\"");
+            
+            data.Username = apiItems[7];
+            data.ClanName = apiItems[11];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new ResponseWrapper<PlayerDetailsServiceResponse>
+                {
+                    Success = false,
+                    Status = $"User {username} not found in the Official API details table",
+                    Data = data
+                };
+            }
+            
+            return new ResponseWrapper<PlayerDetailsServiceResponse>
+            {
+                Success = true,
+                Data = data
+            };
+        }        
+        public async Task<ResponseWrapper<PlayerMetricsServiceResponse>> GetPlayerMetrics(String username)
+        {
+            var data = new PlayerMetricsServiceResponse();
+            var user = await _UserRepo.GetShallowUserByUsername(username);
+
+            try
+            {
+            var apiData = await OfficialApiCall(Constants.RunescapeApiPlayerMetricsUrlPre + username + Constants.RunescapeApiPlayerMetricsUrlPost);
+            JObject joResponse = JObject.Parse(apiData);
+            var questsComplete = (int)joResponse["questscomplete"];
+            var name = (string)joResponse["name"];
+            data.Username = name;
+            data.QuestsComplete = questsComplete;
+
+            data.Activities = new List<Activity>();
+            JArray activities = (JArray)joResponse ["activities"];
+            foreach (var activity in activities)
+            {
+                var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
+                var newActivity = new Activity()
+                {
+                    User = user,
+                    UserId = user.Id,
+                    DateRecorded = dateRecorded,
+                    Title = activity.Value<String>("text"),
+                    Details = activity.Value<String>("details"),
+                };
+                data.Activities.Add(newActivity);
+            }
+
+            var addedActivities = await _UserRepo.CreateActivities(data.Activities);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new ResponseWrapper<PlayerMetricsServiceResponse>
+                {
+                    Success = false,
+                    Status = $"User {username} has RuneMetrics profile set to private",
+                    Data = data
+                };
+            }
+            
+            return new ResponseWrapper<PlayerMetricsServiceResponse>
+            {
+                Success = true,
+                Data = data
+            };
+        }
 
         public async Task CreateStatRecord(User user)
         {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            var apiData = await OfficialApiCall(user.Username);
+            var apiData = await OfficialApiCall(_address + user.Username);
             if (apiData == null)
             {
                 return;

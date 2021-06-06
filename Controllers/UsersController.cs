@@ -162,6 +162,27 @@ namespace dotnet5_webapp.Controllers
         {
             var response = await UserService.CurrentPlayerCount();
             return Ok(response);
+        }    
+        
+        [HttpGet("details/{username}")]
+        public async Task<ActionResult<ResponseWrapper<PlayerDetailsServiceResponse>>> GetPlayerDetails(string username)
+        {
+            var response = await UserService.GetPlayerDetails(username);
+            return Ok(response);
+        }        
+        
+        [HttpGet("metrics/{username}")]
+        public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetPlayerMetrics(string username)
+        {
+            var response = await UserService.GetPlayerMetrics(username);
+            return Ok(response);
+        }        
+        
+        [HttpGet("activities")]
+        public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetAllActivities()
+        {
+            var response = await UserService.GetAllActivities();
+            return Ok(response);
         }
 
         private bool UserExists(int id)

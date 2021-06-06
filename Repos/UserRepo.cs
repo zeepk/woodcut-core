@@ -25,6 +25,12 @@ namespace dotnet5_webapp.Repos
                 .FirstOrDefaultAsync();
             return user;
         }
+        public async Task<User> GetShallowUserByUsername(string username)
+        {
+            var user = await Context.User.Where(u => u.Username == username)
+                .FirstOrDefaultAsync();
+            return user;
+        }
         
         public async Task<User> AddStatRecordToUser(StatRecord statRecord)
         {
@@ -38,17 +44,34 @@ namespace dotnet5_webapp.Repos
             await Context.User.AddAsync(user);
             await Context.SaveChangesAsync();
             return user;
+        }            
+        public async Task<List<Activity>> CreateActivities(List<Activity> activities)
+        {
+            foreach (var activity in activities)
+            {
+            var doesActivityExist = await Context.Activity.AnyAsync(a => a.Title == activity.Title);
+            if (!doesActivityExist)
+            {
+            await Context.Activity.AddAsync(activity);
+            }
+            }
+            await Context.SaveChangesAsync();
+            return activities;
         }        
         public async Task<User> SaveChanges(User user)
         {
             await Context.SaveChangesAsync();
             return user;
         }
-
         public async Task<List<User>> GetAllUsers()
         {
             return await Context.User
                 .Include(u => u.StatRecords)
+                .ToListAsync();
+        }
+        public async Task<List<Activity>> GetAllActivities()
+        {
+            return await Context.Activity.OrderByDescending(a => a.DateRecorded)
                 .ToListAsync();
         }
         public async Task<StatRecord> GetYesterdayRecord(int userId)
