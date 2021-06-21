@@ -8,7 +8,7 @@ namespace dotnet5_webapp.Internal
     {
         public String Username { get; set; }
         public String? DisplayName { get; set; }
-        public String? StatusMessage { get; set; }
+        public Boolean? IsTracking { get; set; }
         public ICollection<SkillGain>? SkillGains { get; set; }
         public ICollection<MinigameGain>? MinigameGains { get; set; }
         public ICollection<Constants.BadgeType>? Badges { get; set; }

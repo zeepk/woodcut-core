@@ -14,7 +14,9 @@ namespace dotnet5_webapp.Repos
         Task<User> CreateUser(User user);
         Task<List<Activity>> CreateActivities(List<Activity> activities);
         Task<User> SaveChanges(User user);
+        Task<User> StartTrackingUser(User user);
         Task<List<User>> GetAllUsers();
+        Task<List<User>> GetAllTrackableUsers();
         Task<List<Activity>> GetAllActivities();
         Task<StatRecord> GetYesterdayRecord(int userId);
         Task<StatRecord> GetWeekRecord(int userId);

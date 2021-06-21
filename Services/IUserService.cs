@@ -12,9 +12,10 @@ namespace dotnet5_webapp.Services
         Task<List<String>> AddNewStatRecordForAllUsers();
         Task<User> CreateNewUser(String username);
         Task<UserSearchResponse> SearchForUser(String username);
-        Task<CurrentGainForUserServiceResponse> CurrentGainForUser(String username);
+        Task<ResponseWrapper<CurrentGainForUserServiceResponse>> CurrentGainForUser(String username);
         Task<ResponseWrapper<PlayerDetailsServiceResponse>> GetPlayerDetails(String username);
         Task<ResponseWrapper<PlayerMetricsServiceResponse>> GetPlayerMetrics(String username);
+        Task<ResponseWrapper<Boolean>> TrackUser(String username);
         Task<int> CurrentPlayerCount();
         Task<List<Activity>> GetAllActivities();
     }

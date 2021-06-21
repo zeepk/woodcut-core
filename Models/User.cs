@@ -12,5 +12,6 @@ namespace dotnet5_webapp.Models
         public string DisplayName { get; set; }
         public DateTime DateCreated { get; set; }
         public List<StatRecord> StatRecords { get; set; }
+        public bool IsTracking { get; set; }
     }
 }

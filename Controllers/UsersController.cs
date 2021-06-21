@@ -57,15 +57,6 @@ namespace dotnet5_webapp.Controllers
             var response = await UserService.SearchForUser(username);
             return Ok(response);
         }
-        
-        // GET: api/Users/gains/zee+pk
-        // returns specific user and their records
-        [HttpGet("gains/{username}")]
-        public async Task<ActionResult<CurrentGainForUserServiceResponse>> GetGainsForUser(string username)
-        {
-            var response = await UserService.CurrentGainForUser(username);
-            return Ok(response);
-        }
 
         // PUT: api/Users/updateall
         // add a new record to each user
@@ -158,11 +149,20 @@ namespace dotnet5_webapp.Controllers
         }
         
         [HttpGet("playercount")]
-        public async Task<ActionResult<CurrentGainForUserServiceResponse>> GetPlayerCount()
+        public async Task<ActionResult<int>> GetPlayerCount()
         {
             var response = await UserService.CurrentPlayerCount();
             return Ok(response);
         }    
+        
+        // GET: api/Users/gains/zee+pk
+        // returns specific user and their records
+        [HttpGet("gains/{username}")]
+        public async Task<ActionResult<ResponseWrapper<CurrentGainForUserServiceResponse>>> GetGainsForUser(string username)
+        {
+            var response = await UserService.CurrentGainForUser(username);
+            return Ok(response);
+        }
         
         [HttpGet("details/{username}")]
         public async Task<ActionResult<ResponseWrapper<PlayerDetailsServiceResponse>>> GetPlayerDetails(string username)
@@ -182,6 +182,13 @@ namespace dotnet5_webapp.Controllers
         public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetAllActivities()
         {
             var response = await UserService.GetAllActivities();
+            return Ok(response);
+        }   
+        
+        [HttpPut("track/{username}")]
+        public async Task<ActionResult<ResponseWrapper<Boolean>>> TrackUser(String username)
+        {
+            var response = await UserService.TrackUser(username);
             return Ok(response);
         }
 

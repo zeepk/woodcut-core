@@ -266,7 +266,7 @@ namespace dotnet5_webapp.Services
 
         public async Task<List<String>> AddNewStatRecordForAllUsers()
         {
-            var users = await _UserRepo.GetAllUsers();
+            var users = await _UserRepo.GetAllTrackableUsers();
             
             var tasks = users.ToList().Select(u => CreateStatRecord(u));
             await Task.WhenAll(tasks);
@@ -286,7 +286,8 @@ namespace dotnet5_webapp.Services
                 DateCreated = DateTime.Now,
                 Username = username,
                 DisplayName = username.Replace('+', ' '),
-                StatRecords = new List<StatRecord>()
+                StatRecords = new List<StatRecord>(),
+                IsTracking = false
             };
             
             // if the user is not found in the Official API, this will error out
@@ -303,11 +304,37 @@ namespace dotnet5_webapp.Services
             
             var user = await _UserRepo.CreateUser(newUser);
             return user;
-        }        
-        public async Task<CurrentGainForUserServiceResponse> CurrentGainForUser(String username)
+        }
+
+        public async Task<ResponseWrapper<Boolean>> TrackUser(String username)
         {
-            var response = new CurrentGainForUserServiceResponse();
-            response.Username = username;
+            var response = new ResponseWrapper<Boolean>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var user = await _UserRepo.GetUserByUsername(username);
+            if (user == null)
+            {
+                response.Success = false;
+                response.Status = "User does not exist in the database.";
+                return response;
+            }
+            
+            user = await _UserRepo.StartTrackingUser(user);
+            response.Data = user.IsTracking;
+            return response;
+        }
+
+        public async Task<ResponseWrapper<CurrentGainForUserServiceResponse>> CurrentGainForUser(String username)
+        {
+            var response = new ResponseWrapper<CurrentGainForUserServiceResponse>
+            {
+                Success = true,
+                Status = "",
+                Data = new CurrentGainForUserServiceResponse()
+            };
             
             var user = await _UserRepo.GetUserByUsername(username);
             if (user == null)
@@ -317,12 +344,15 @@ namespace dotnet5_webapp.Services
                 if (user == null)
                 {
                     //if still null, means nobody exists with that username and we just return null for now
-                    response.StatusMessage = "User does not exist on the official hiscores.";
-                    return null;
+                    response.Success = false;
+                    response.Status = "User does not exist on the official hiscores.";
+                    return response;
                 }
-                response.StatusMessage = "User created.";
+                response.Status = "User created.";
             }
             
+            response.Data.Username = username;
+            response.Data.IsTracking = user.IsTracking;
             
             var skillGains = new List<SkillGain>();
             var minigameGains = new List<MinigameGain>();
@@ -333,7 +363,8 @@ namespace dotnet5_webapp.Services
 
             if (currentMinigames == null || currentSkills == null)
             {
-                response.StatusMessage = "User not found.";
+                response.Status = "User not found.";
+                response.Success = false;
                 return response;
             }
 
@@ -432,10 +463,10 @@ namespace dotnet5_webapp.Services
                 }
             }
 
-            response.SkillGains = skillGains;
-            response.MinigameGains = minigameGains;
-            response.Badges = badges;
-            response.DisplayName = user.DisplayName;
+            response.Data.SkillGains = skillGains;
+            response.Data.MinigameGains = minigameGains;
+            response.Data.Badges = badges;
+            response.Data.DisplayName = user.DisplayName;
             
             return response;
         }

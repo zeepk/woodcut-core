@@ -333,6 +333,9 @@ namespace dotnet5_webapp.Migrations
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsTracking")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 

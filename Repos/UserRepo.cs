@@ -63,9 +63,22 @@ namespace dotnet5_webapp.Repos
             await Context.SaveChangesAsync();
             return user;
         }
+        public async Task<User> StartTrackingUser(User user)
+        {
+            user.IsTracking = true;
+            await Context.SaveChangesAsync();
+            return user;
+        }
         public async Task<List<User>> GetAllUsers()
         {
             return await Context.User
+                .Include(u => u.StatRecords)
+                .ToListAsync();
+        }        
+        public async Task<List<User>> GetAllTrackableUsers()
+        {
+            return await Context.User
+                .Where(u => u.IsTracking)
                 .Include(u => u.StatRecords)
                 .ToListAsync();
         }
