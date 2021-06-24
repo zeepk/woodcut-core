@@ -137,6 +137,57 @@ namespace dotnet5_webapp.Services
                 Success = true,
                 Data = data
             };
+        }         
+        public async Task<ResponseWrapper<PlayerQuestsServiceResponse>> GetPlayerQuests(String username)
+        {
+            var data = new PlayerQuestsServiceResponse();
+
+            try
+            {
+                var apiData = await OfficialApiCall(Constants.RunescapeApiQuestsUrl + username);
+                JObject joResponse = JObject.Parse(apiData);
+                data.Username = username;
+                var totalQuests = 0; 
+                var completedQuests = 0;
+                var questPoints = 0;
+                var totalQuestPoints = 0;
+                
+                JArray quests = (JArray)joResponse ["quests"];
+                foreach (var quest in quests)
+                {
+                    var qp = quest.Value<int>("questPoints");
+                    totalQuests++;
+                    totalQuestPoints += qp;
+                    if (quest.Value<string>("status") == Constants.QuestStatusCompleted)
+                    {
+                        completedQuests++;
+                        questPoints += qp;
+                    }
+
+                }
+                
+                data.TotalQuests = totalQuests;
+                data.CompletedQuests = completedQuests;
+                data.QuestPoints = questPoints;
+                data.TotalQuestPoints = totalQuestPoints;
+                data.QuestCape = totalQuests == completedQuests;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new ResponseWrapper<PlayerQuestsServiceResponse>
+                {
+                    Success = false,
+                    Status = $"Cannot find quest data for user: {username}",
+                    Data = data
+                };
+            }
+            
+            return new ResponseWrapper<PlayerQuestsServiceResponse>
+            {
+                Success = true,
+                Data = data
+            };
         }        
         public async Task<ResponseWrapper<PlayerMetricsServiceResponse>> GetPlayerMetrics(String username)
         {

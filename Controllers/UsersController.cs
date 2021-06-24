@@ -176,6 +176,13 @@ namespace dotnet5_webapp.Controllers
         {
             var response = await UserService.GetPlayerMetrics(username);
             return Ok(response);
+        }  
+        
+        [HttpGet("quests/{username}")]
+        public async Task<ActionResult<ResponseWrapper<PlayerQuestsServiceResponse>>> GetPlayerQuests(string username)
+        {
+            var response = await UserService.GetPlayerQuests(username);
+            return Ok(response);
         }        
         
         [HttpGet("activities")]

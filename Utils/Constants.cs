@@ -13,6 +13,10 @@ namespace dotnet5_webapp.Utils
         public const string RunescapeApiPlayerMetricsUrlPre = "https://apps.runescape.com/runemetrics/profile/profile?user=";
         public const string RunescapeApiPlayerMetricsUrlPost = "&activities=20";
         public const string RunescapeApiPlayerCount = "http://www.runescape.com/player_count.js?varname=iPlayerCount&callback=jQuery000000000000000_0000000000&_=0";
+        public const string RunescapeApiQuestsUrl = "https://apps.runescape.com/runemetrics/quests?user=";
+        public const string QuestStatusCompleted = "COMPLETED";
+        public const string QuestStatusStarted = "STARTED";
+        public const string QuestStatusNotStarted = "NOT_STARTED";
         public const int TotalSkills = 28;
         public const long MaxXp = 5600000000;
         public const int MaxTotal = 2898;

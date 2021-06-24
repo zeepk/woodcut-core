@@ -15,6 +15,7 @@ namespace dotnet5_webapp.Services
         Task<ResponseWrapper<CurrentGainForUserServiceResponse>> CurrentGainForUser(String username);
         Task<ResponseWrapper<PlayerDetailsServiceResponse>> GetPlayerDetails(String username);
         Task<ResponseWrapper<PlayerMetricsServiceResponse>> GetPlayerMetrics(String username);
+        Task<ResponseWrapper<PlayerQuestsServiceResponse>> GetPlayerQuests(String username);
         Task<ResponseWrapper<Boolean>> TrackUser(String username);
         Task<int> CurrentPlayerCount();
         Task<List<Activity>> GetAllActivities();
