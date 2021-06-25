@@ -165,12 +165,22 @@ namespace dotnet5_webapp.Services
                     }
 
                 }
+
+                if (totalQuests <= 0 || totalQuestPoints <= 0)
+                {
+                    return new ResponseWrapper<PlayerQuestsServiceResponse>
+                    {
+                        Success = false,
+                        Status = $"User {username} has RuneMetrics profile set to private",
+                        Data = data
+                    };
+                }
                 
                 data.TotalQuests = totalQuests;
                 data.CompletedQuests = completedQuests;
                 data.QuestPoints = questPoints;
                 data.TotalQuestPoints = totalQuestPoints;
-                data.QuestCape = totalQuests == completedQuests;
+                data.QuestCape = totalQuests == completedQuests && questPoints > 400;
             }
             catch (Exception e)
             {
