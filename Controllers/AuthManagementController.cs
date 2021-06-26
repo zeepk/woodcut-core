@@ -6,8 +6,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using dotnet5_webapp.Configuration;
+using dotnet5_webapp.Internal;
 using dotnet5_webapp.Models.DTO.Requests;
 using dotnet5_webapp.Models.DTO.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -79,6 +81,30 @@ namespace dotnet5_webapp.Controllers
                 Success = false
             });
         }
+        
+        [HttpGet("check")]
+        [Authorize]
+        public async Task<ActionResult<ResponseWrapper<string>>> TestAuth()
+        {
+            var response = new ResponseWrapper<string>
+            {
+                Success = true,
+                Status = "",
+                Data = ""
+            };
+            
+            var username = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+
+            if (username == null)
+            {
+                response.Success = false;
+                response.Status = "Unable to automatically authenticate the current user.";
+                return Unauthorized(response);
+            }
+
+            response.Data = username;
+            return Ok(response);
+        }
 
         [HttpPost]
         [Route("login")]
@@ -145,6 +171,7 @@ namespace dotnet5_webapp.Controllers
                    new Claim("Id", user.Id),
                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                   new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddHours(6),

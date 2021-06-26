@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,9 @@ using dotnet5_webapp.Models;
 using dotnet5_webapp.Services;
 using Microsoft.Extensions.Configuration;
 using dotnet5_webapp.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace dotnet5_webapp.Controllers
 {
@@ -161,6 +164,13 @@ namespace dotnet5_webapp.Controllers
         public async Task<ActionResult<ResponseWrapper<CurrentGainForUserServiceResponse>>> GetGainsForUser(string username)
         {
             var response = await UserService.CurrentGainForUser(username);
+            return Ok(response);
+        }        
+        [HttpGet("username")]
+        [Authorize]
+        public async Task<ActionResult<string>> TestAuth()
+        {
+            var response = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             return Ok(response);
         }
         

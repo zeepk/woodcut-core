@@ -54,7 +54,7 @@ namespace dotnet5_webapp
             .AddJwtBearer(jwt =>
             {
                 var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
-
+                jwt.RequireHttpsMetadata = false;
                 jwt.SaveToken = true;
                 jwt.TokenValidationParameters = new TokenValidationParameters
                 {
