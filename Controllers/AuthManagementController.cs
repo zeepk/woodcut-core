@@ -41,7 +41,7 @@ namespace dotnet5_webapp.Controllers
                 var existingUser = await _userManager.FindByEmailAsync(user.Email);
                 if (existingUser != null)
                 {
-                    return BadRequest(new RegistrationResponse()
+                    return Ok(new RegistrationResponse()
                     {
                         Errors = new List<string>()
                         {
@@ -64,7 +64,7 @@ namespace dotnet5_webapp.Controllers
                 }
                 else
                 {
-                    return BadRequest(new RegistrationResponse()
+                    return Ok(new RegistrationResponse()
                     {
                         Errors = isCreated.Errors.Select(e => e.Description).ToList(),
                         Success = false
@@ -72,7 +72,7 @@ namespace dotnet5_webapp.Controllers
                 }
             }
 
-            return BadRequest(new RegistrationResponse()
+            return Ok(new RegistrationResponse()
             {
                 Errors = new List<string>()
                 {
