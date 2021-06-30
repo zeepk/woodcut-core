@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace dotnet5_webapp.Models
 {
-    public class User
+    public class Player
     {
         public int Id { get; set; }
         public string Username { get; set; }

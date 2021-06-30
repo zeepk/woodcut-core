@@ -15,7 +15,7 @@ namespace dotnet5_webapp.Repos
         private readonly DataContext Context;
         public UserRepo(DataContext context) => Context = context;
 
-        public async Task<User> GetUserByUsername(string username)
+        public async Task<Player> GetPlayerByUsername(string username)
         {
             var user = await Context.User.Where(u => u.Username == username)
                 .Include(u => u.StatRecords)
@@ -24,58 +24,101 @@ namespace dotnet5_webapp.Repos
                 .ThenInclude(r => r.Minigames.OrderBy(s => s.MinigameId))
                 .FirstOrDefaultAsync();
             return user;
+        }         
+        public async Task<Player> GetPlayerById(int id)
+        {
+            var user = await Context.User.Where(u => u.Id == id)
+                .FirstOrDefaultAsync();
+            return user;
+        }        
+        public async Task<ApplicationUser> GetUserByUsername(string username)
+        {
+            var user = await Context.ApplicationUser
+                .Where(au => au.UserName == username)
+                .Include(au => au.FollowingPlayers)
+                .FirstOrDefaultAsync();
+            return user;
         }
-        public async Task<User> GetShallowUserByUsername(string username)
+        public async Task<Player> GetShallowUserByUsername(string username)
         {
             var user = await Context.User.Where(u => u.Username == username)
                 .FirstOrDefaultAsync();
             return user;
         }
         
-        public async Task<User> AddStatRecordToUser(StatRecord statRecord)
+        public async Task<Player> AddStatRecordToUser(StatRecord statRecord)
         {
-            var user = await Context.User.Include(u => u.StatRecords).FirstOrDefaultAsync(u => u.Username == statRecord.User.Username);
+            var user = await Context.User.Include(u => u.StatRecords).FirstOrDefaultAsync(u => u.Username == statRecord.Player.Username);
             user.StatRecords.Add(statRecord);
             await Context.SaveChangesAsync();
             return user;
         }               
-        public async Task<User> CreateUser(User user)
+        public async Task<Player> CreateUser(Player player)
         {
-            await Context.User.AddAsync(user);
+            await Context.User.AddAsync(player);
             await Context.SaveChangesAsync();
-            return user;
+            return player;
         }            
         public async Task<List<Activity>> CreateActivities(List<Activity> activities)
         {
             foreach (var activity in activities)
             {
-            var doesActivityExist = await Context.Activity.AnyAsync(a => a.Title == activity.Title);
+            var doesActivityExist = await Context.Activity
+                .AnyAsync(a => a.Title == activity.Title && a.DateRecorded == activity.DateRecorded && a.Player == activity.Player);
             if (!doesActivityExist)
             {
-            await Context.Activity.AddAsync(activity);
+                await Context.Activity.AddAsync(activity);
             }
             }
             await Context.SaveChangesAsync();
             return activities;
         }        
-        public async Task<User> SaveChanges(User user)
+        public async Task<Player> SaveChanges(Player player)
         {
             await Context.SaveChangesAsync();
-            return user;
+            return player;
         }
-        public async Task<User> StartTrackingUser(User user)
+        public async Task<Player> StartTrackingUser(Player player)
         {
-            user.IsTracking = true;
+            player.IsTracking = true;
             await Context.SaveChangesAsync();
-            return user;
+            return player;
+        }        
+        public async Task<Player> FollowPlayer(Follow follow, ApplicationUser user)
+        {
+            await Context.Follow.AddAsync(follow);
+            await Context.SaveChangesAsync();
+            user.FollowingPlayers.Add(follow);
+            return follow.Player;
+        }        
+        public async Task<Player> UnfollowPlayer(Player player, ApplicationUser user)
+        {
+            var follow = await Context.Follow.Where(f => f.Player == player && f.User == user).FirstOrDefaultAsync();
+            // user.FollowingPlayers = user.FollowingPlayers.Where(f => f.Id != follow.Id).ToList();
+            // user.FollowingPlayers.Remove()
+            Context.Follow.Remove(follow);
+            await Context.SaveChangesAsync();
+            return player;
+        }        
+        public async Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user)
+        {
+            // var users = user.FollowingIds.Select(id => GetPlayerById(id));
+            // var players = Context.User
+            //     .Where(p => user.FollowingIds.Contains(p.Id));
+            // return await players.Select(p => p.Username).ToListAsync();
+
+            return await Context.Follow
+                .Include(f => f.Player)
+                .Select(f => f.Player.Username)
+                .ToListAsync();
         }
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<Player>> GetAllUsers()
         {
             return await Context.User
                 .Include(u => u.StatRecords)
                 .ToListAsync();
         }        
-        public async Task<List<User>> GetAllTrackableUsers()
+        public async Task<List<Player>> GetAllTrackableUsers()
         {
             return await Context.User
                 .Where(u => u.IsTracking)

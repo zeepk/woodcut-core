@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using dotnet5_webapp.Internal;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Repos;
 using dotnet5_webapp.Utils;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet5_webapp.Services
 {
@@ -220,7 +222,7 @@ namespace dotnet5_webapp.Services
                 var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
                 var newActivity = new Activity()
                 {
-                    User = user,
+                    Player = user,
                     UserId = user.Id,
                     DateRecorded = dateRecorded,
                     Title = activity.Value<String>("text"),
@@ -249,11 +251,11 @@ namespace dotnet5_webapp.Services
             };
         }
 
-        public async Task CreateStatRecord(User user)
+        public async Task CreateStatRecord(Player player)
         {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            var apiData = await OfficialApiCall(_address + user.Username);
+            var apiData = await OfficialApiCall(_address + player.Username);
             if (apiData == null)
             {
                 return;
@@ -264,8 +266,8 @@ namespace dotnet5_webapp.Services
             StatRecord newStatRecord = new StatRecord()
             {
                 DateCreated = DateTime.Now,
-                UserId = user.Id,
-                User = user
+                UserId = player.Id,
+                Player = player
             };
 
             // looping through the skills and adding them
@@ -303,15 +305,43 @@ namespace dotnet5_webapp.Services
 
             newStatRecord.Skills = skills;
             newStatRecord.Minigames = minigames;
-            user.StatRecords.Add(newStatRecord);
+            player.StatRecords.Add(newStatRecord);
+            
+            // try
+            // {
+            //     var activityApiData = await OfficialApiCall(Constants.RunescapeApiPlayerMetricsUrlPre + player.Username + Constants.RunescapeApiPlayerMetricsUrlPost);
+            //     JObject joResponse = JObject.Parse(activityApiData);
+            //
+            //     var activities = new List<Activity>();
+            //     JArray jsonActivities = (JArray)joResponse ["activities"];
+            //     foreach (var activity in jsonActivities)
+            //     {
+            //         var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
+            //         var newActivity = new Activity()
+            //         {
+            //             Player = player,
+            //             UserId = player.Id,
+            //             DateRecorded = dateRecorded,
+            //             Title = activity.Value<String>("text"),
+            //             Details = activity.Value<String>("details"),
+            //         };
+            //         activities.Add(newActivity);
+            //     }
+            //
+            //     var addedActivities = await _UserRepo.CreateActivities(activities);
+            // }
+            // catch (Exception e)
+            // {
+            //     Console.WriteLine(e);
+            // }
             // var updatedUser = await _UserRepo.AddStatRecordToUser(newStatRecord);
             // return newStatRecord;
         }
 
-        public async Task<UserSearchResponse> SearchForUser(String username)
+        public async Task<UserSearchResponse> SearchForPlayer(String username)
         {
             var response = new UserSearchResponse();
-            var user = await _UserRepo.GetUserByUsername(username);
+            var user = await _UserRepo.GetPlayerByUsername(username);
             if (user == null)
             {
                 user = await CreateNewUser(username);
@@ -323,6 +353,11 @@ namespace dotnet5_webapp.Services
             }
             response.User = user;
             return response;
+        }
+        public async Task<ApplicationUser> SearchForUser(String username)
+        {
+            var user = await _UserRepo.GetUserByUsername(username);
+            return user;
         }
 
         public async Task<List<String>> AddNewStatRecordForAllUsers()
@@ -339,10 +374,10 @@ namespace dotnet5_webapp.Services
             return usernames.ToList();
         }
 
-        public async Task<User> CreateNewUser(String username)
+        public async Task<Player> CreateNewUser(String username)
         {
             // creating new user
-            User newUser = new User()
+            Player newPlayer = new Player()
             {
                 DateCreated = DateTime.Now,
                 Username = username,
@@ -355,7 +390,7 @@ namespace dotnet5_webapp.Services
             try
             {
                 // creating an initial stat record
-                await CreateStatRecord(newUser);
+                await CreateStatRecord(newPlayer);
             }
             catch
             {
@@ -363,7 +398,7 @@ namespace dotnet5_webapp.Services
                 return null;
             }
             
-            var user = await _UserRepo.CreateUser(newUser);
+            var user = await _UserRepo.CreateUser(newPlayer);
             return user;
         }
 
@@ -375,7 +410,7 @@ namespace dotnet5_webapp.Services
                 Status = ""
             };
             
-            var user = await _UserRepo.GetUserByUsername(username);
+            var user = await _UserRepo.GetPlayerByUsername(username);
             if (user == null)
             {
                 response.Success = false;
@@ -397,7 +432,7 @@ namespace dotnet5_webapp.Services
                 Data = new CurrentGainForUserServiceResponse()
             };
             
-            var user = await _UserRepo.GetUserByUsername(username);
+            var user = await _UserRepo.GetPlayerByUsername(username);
             if (user == null)
             {
                 // create use if does not exist
@@ -529,6 +564,77 @@ namespace dotnet5_webapp.Services
             response.Data.Badges = badges;
             response.Data.DisplayName = user.DisplayName;
             
+            return response;
+        }
+        
+        public async Task<ResponseWrapper<ICollection<String>>> GetFollowedPlayerNames(ApplicationUser user)
+        {
+            var response = new ResponseWrapper<ICollection<String>>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var usernames = await _UserRepo.GetFollowedPlayerNames(user);
+            response.Data = usernames;
+            return response;
+        }         
+        public async Task<ResponseWrapper<Boolean>> FollowPlayer(String username, ApplicationUser user)
+        {
+            var response = new ResponseWrapper<Boolean>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var player = await _UserRepo.GetPlayerByUsername(username);
+            if (player == null)
+            {
+                response.Success = false;
+                response.Status = "Player does not exist in the database.";
+                return response;
+            }
+
+            var follow = new Follow()
+            {
+                Player = player,
+                User = user
+            };
+
+            var updatedPlayer = _UserRepo.FollowPlayer(follow, user);
+            if (updatedPlayer == null)
+            {
+                response.Success = false;
+                response.Status = "Follow action failed.";
+                return response;
+            }
+
+            return response;
+        } 
+        public async Task<ResponseWrapper<Boolean>> UnfollowPlayer(String username, ApplicationUser user)
+        {
+            var response = new ResponseWrapper<Boolean>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var player = await _UserRepo.GetPlayerByUsername(username);
+            if (player == null)
+            {
+                response.Success = false;
+                response.Status = "Player does not exist in the database.";
+                return response;
+            }
+            
+            var updatedPlayer = await _UserRepo.UnfollowPlayer(player, user);
+            if (updatedPlayer == null)
+            {
+                response.Success = false;
+                response.Status = "Follow action failed.";
+                return response;
+            }
+
             return response;
         }
     }

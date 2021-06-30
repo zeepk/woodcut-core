@@ -8,15 +8,19 @@ namespace dotnet5_webapp.Repos
 {
     public interface IUserRepo
     {
-        Task<User> GetUserByUsername(string username);
-        Task<User> GetShallowUserByUsername(string username);
-        Task<User> AddStatRecordToUser(StatRecord statRecord);
-        Task<User> CreateUser(User user);
+        Task<Player> GetPlayerByUsername(string username);
+        Task<ApplicationUser> GetUserByUsername(string username);
+        Task<Player> GetShallowUserByUsername(string username);
+        Task<Player> AddStatRecordToUser(StatRecord statRecord);
+        Task<Player> CreateUser(Player player);
         Task<List<Activity>> CreateActivities(List<Activity> activities);
-        Task<User> SaveChanges(User user);
-        Task<User> StartTrackingUser(User user);
-        Task<List<User>> GetAllUsers();
-        Task<List<User>> GetAllTrackableUsers();
+        Task<Player> SaveChanges(Player player);
+        Task<Player> StartTrackingUser(Player player);
+        Task<Player> FollowPlayer(Follow follow, ApplicationUser user);
+        Task<Player> UnfollowPlayer(Player player, ApplicationUser user);
+        Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user);
+        Task<List<Player>> GetAllUsers();
+        Task<List<Player>> GetAllTrackableUsers();
         Task<List<Activity>> GetAllActivities();
         Task<StatRecord> GetYesterdayRecord(int userId);
         Task<StatRecord> GetWeekRecord(int userId);

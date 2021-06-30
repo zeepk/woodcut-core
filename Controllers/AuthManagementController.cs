@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using dotnet5_webapp.Configuration;
 using dotnet5_webapp.Internal;
+using dotnet5_webapp.Models;
 using dotnet5_webapp.Models.DTO.Requests;
 using dotnet5_webapp.Models.DTO.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -51,7 +52,7 @@ namespace dotnet5_webapp.Controllers
                     });
                 }
 
-                var newUser = new IdentityUser() {Email = user.Email, UserName = user.UserName};
+                var newUser = new ApplicationUser() {Email = user.Email, UserName = user.UserName};
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
                 if (isCreated.Succeeded)
                 {

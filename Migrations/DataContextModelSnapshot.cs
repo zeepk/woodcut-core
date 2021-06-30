@@ -82,6 +82,10 @@ namespace dotnet5_webapp.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -133,6 +137,8 @@ namespace dotnet5_webapp.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -232,6 +238,9 @@ namespace dotnet5_webapp.Migrations
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PlayerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
@@ -240,9 +249,31 @@ namespace dotnet5_webapp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PlayerId");
 
                     b.ToTable("Activity");
+                });
+
+            modelBuilder.Entity("dotnet5_webapp.Models.Follow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int?>("PlayerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Follow");
                 });
 
             modelBuilder.Entity("dotnet5_webapp.Models.Minigame", b =>
@@ -269,6 +300,30 @@ namespace dotnet5_webapp.Migrations
                     b.HasIndex("StatRecordId");
 
                     b.ToTable("Minigame");
+                });
+
+            modelBuilder.Entity("dotnet5_webapp.Models.Player", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsTracking")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("dotnet5_webapp.Models.Skill", b =>
@@ -310,38 +365,24 @@ namespace dotnet5_webapp.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("PlayerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PlayerId");
 
                     b.ToTable("StatRecord");
                 });
 
-            modelBuilder.Entity("dotnet5_webapp.Models.User", b =>
+            modelBuilder.Entity("dotnet5_webapp.Models.ApplicationUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsTracking")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
+                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -397,11 +438,24 @@ namespace dotnet5_webapp.Migrations
 
             modelBuilder.Entity("dotnet5_webapp.Models.Activity", b =>
                 {
-                    b.HasOne("dotnet5_webapp.Models.User", "User")
+                    b.HasOne("dotnet5_webapp.Models.Player", "Player")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PlayerId");
+
+                    b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("dotnet5_webapp.Models.Follow", b =>
+                {
+                    b.HasOne("dotnet5_webapp.Models.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId");
+
+                    b.HasOne("dotnet5_webapp.Models.ApplicationUser", "User")
+                        .WithMany("FollowingPlayers")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Player");
 
                     b.Navigation("User");
                 });
@@ -422,13 +476,16 @@ namespace dotnet5_webapp.Migrations
 
             modelBuilder.Entity("dotnet5_webapp.Models.StatRecord", b =>
                 {
-                    b.HasOne("dotnet5_webapp.Models.User", "User")
+                    b.HasOne("dotnet5_webapp.Models.Player", "Player")
                         .WithMany("StatRecords")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PlayerId");
 
-                    b.Navigation("User");
+                    b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("dotnet5_webapp.Models.Player", b =>
+                {
+                    b.Navigation("StatRecords");
                 });
 
             modelBuilder.Entity("dotnet5_webapp.Models.StatRecord", b =>
@@ -438,9 +495,9 @@ namespace dotnet5_webapp.Migrations
                     b.Navigation("Skills");
                 });
 
-            modelBuilder.Entity("dotnet5_webapp.Models.User", b =>
+            modelBuilder.Entity("dotnet5_webapp.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("StatRecords");
+                    b.Navigation("FollowingPlayers");
                 });
 #pragma warning restore 612, 618
         }
