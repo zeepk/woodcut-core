@@ -11,6 +11,7 @@ namespace dotnet5_webapp.Services
     {
         Task CreateStatRecord(Player player);
         Task<List<String>> AddNewStatRecordForAllUsers();
+        Task<List<Activity>> AddNewActivitiesForAllUsers();
         Task<Player> CreateNewUser(String username);
         Task<UserSearchResponse> SearchForPlayer(String username);
         Task<ApplicationUser> SearchForUser(String username);
@@ -21,6 +22,7 @@ namespace dotnet5_webapp.Services
         Task<ResponseWrapper<Boolean>> TrackUser(String username);
         Task<ResponseWrapper<Boolean>> FollowPlayer(String username, ApplicationUser user);
         Task<ResponseWrapper<Boolean>> UnfollowPlayer(String username, ApplicationUser user);
+        Task<ResponseWrapper<Boolean>> UpdateRs3Rsn(String username, ApplicationUser user);
         Task<ResponseWrapper<ICollection<String>>> GetFollowedPlayerNames(ApplicationUser user);
         Task<int> CurrentPlayerCount();
         Task<List<Activity>> GetAllActivities();

@@ -382,6 +382,12 @@ namespace dotnet5_webapp.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<string>("OsrsRsn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rs3Rsn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 

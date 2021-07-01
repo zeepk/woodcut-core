@@ -61,17 +61,19 @@ namespace dotnet5_webapp.Repos
         }            
         public async Task<List<Activity>> CreateActivities(List<Activity> activities)
         {
+            var updatedActivities = new List<Activity>();
             foreach (var activity in activities)
             {
-            var doesActivityExist = await Context.Activity
+                var doesActivityExist = await Context.Activity
                 .AnyAsync(a => a.Title == activity.Title && a.DateRecorded == activity.DateRecorded && a.Player == activity.Player);
-            if (!doesActivityExist)
-            {
-                await Context.Activity.AddAsync(activity);
-            }
+                if (!doesActivityExist)
+                {
+                    await Context.Activity.AddAsync(activity);
+                    updatedActivities.Add(activity);
+                }
             }
             await Context.SaveChangesAsync();
-            return activities;
+            return updatedActivities;
         }        
         public async Task<Player> SaveChanges(Player player)
         {
@@ -99,6 +101,12 @@ namespace dotnet5_webapp.Repos
             Context.Follow.Remove(follow);
             await Context.SaveChangesAsync();
             return player;
+        }             
+        public async Task<bool> UpdateRs3Rsn(string username, ApplicationUser user)
+        {
+            user.Rs3Rsn = username;
+            await Context.SaveChangesAsync();
+            return true;
         }        
         public async Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user)
         {

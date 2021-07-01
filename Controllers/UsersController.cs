@@ -66,10 +66,17 @@ namespace dotnet5_webapp.Controllers
         [HttpPost("updateall")]
         public async Task<IActionResult> UpdateAllUsers()
         {
-
             var updatedUsers = await UserService.AddNewStatRecordForAllUsers();
             return Ok(updatedUsers);
-
+        }
+        
+        // PUT: api/Users/updateall
+        // add a new record to each user
+        [HttpPost("updateactivities")]
+        public async Task<IActionResult> UpdateActivitiesForAllUsers()
+        {
+            var updatedUsers = await UserService.AddNewActivitiesForAllUsers();
+            return Ok(updatedUsers);
         }
 
         // PUT: api/Users/update/zee+pk
@@ -213,8 +220,8 @@ namespace dotnet5_webapp.Controllers
 
             var response = await UserService.GetFollowedPlayerNames(applicationUser);
             return Ok(response);
-        }  
-        
+        }
+
         [HttpPut("follow/{username}")]
         [Authorize]
         public async Task<ActionResult<ResponseWrapper<Boolean>>> FollowPlayer(String username)
@@ -237,13 +244,32 @@ namespace dotnet5_webapp.Controllers
             return Ok(response);
         }
         
-        [HttpGet("username")]
+        [HttpGet("rs3rsn")]
         [Authorize]
         public async Task<ActionResult<string>> TestAuth()
         {
-            var response = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
-            return Ok(response);
+            var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+            var applicationUser = await UserService.SearchForUser(user);
+            var rsn = applicationUser.Rs3Rsn;
+            if (rsn == null)
+            {
+                rsn = "";
+            }
+            return Ok(rsn);
         }
+        
+        // user rsn
+        
+        [HttpPut("rs3rsn/{username}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseWrapper<Boolean>>> UpdateRs3Rsn(String username)
+        {
+            var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+            var applicationUser = await UserService.SearchForUser(user);
+
+            var response = await UserService.UpdateRs3Rsn(username, applicationUser);
+            return Ok(response);
+        } 
 
         private bool UserExists(int id)
         {

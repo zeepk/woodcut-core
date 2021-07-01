@@ -251,6 +251,36 @@ namespace dotnet5_webapp.Services
             };
         }
 
+        public async Task<ICollection<Activity>> UpdateActivitiesForPlayer(Player player)
+        {
+            var activities = new List<Activity>();
+            try
+            {
+                var activityApiData = await OfficialApiCall(Constants.RunescapeApiPlayerMetricsUrlPre + player.Username + Constants.RunescapeApiPlayerMetricsUrlPost);
+                JObject joResponse = JObject.Parse(activityApiData);
+            
+                JArray jsonActivities = (JArray)joResponse ["activities"];
+                foreach (var activity in jsonActivities)
+                {
+                    var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
+                    var newActivity = new Activity()
+                    {
+                        Player = player,
+                        UserId = player.Id,
+                        DateRecorded = dateRecorded,
+                        Title = activity.Value<String>("text"),
+                        Details = activity.Value<String>("details"),
+                    };
+                    activities.Add(newActivity);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return activities;
+        }
         public async Task CreateStatRecord(Player player)
         {
             List<Skill> skills = new List<Skill>();
@@ -306,37 +336,9 @@ namespace dotnet5_webapp.Services
             newStatRecord.Skills = skills;
             newStatRecord.Minigames = minigames;
             player.StatRecords.Add(newStatRecord);
-            
-            // try
-            // {
-            //     var activityApiData = await OfficialApiCall(Constants.RunescapeApiPlayerMetricsUrlPre + player.Username + Constants.RunescapeApiPlayerMetricsUrlPost);
-            //     JObject joResponse = JObject.Parse(activityApiData);
-            //
-            //     var activities = new List<Activity>();
-            //     JArray jsonActivities = (JArray)joResponse ["activities"];
-            //     foreach (var activity in jsonActivities)
-            //     {
-            //         var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
-            //         var newActivity = new Activity()
-            //         {
-            //             Player = player,
-            //             UserId = player.Id,
-            //             DateRecorded = dateRecorded,
-            //             Title = activity.Value<String>("text"),
-            //             Details = activity.Value<String>("details"),
-            //         };
-            //         activities.Add(newActivity);
-            //     }
-            //
-            //     var addedActivities = await _UserRepo.CreateActivities(activities);
-            // }
-            // catch (Exception e)
-            // {
-            //     Console.WriteLine(e);
-            // }
-            // var updatedUser = await _UserRepo.AddStatRecordToUser(newStatRecord);
-            // return newStatRecord;
         }
+        
+        
 
         public async Task<UserSearchResponse> SearchForPlayer(String username)
         {
@@ -366,12 +368,23 @@ namespace dotnet5_webapp.Services
             
             var tasks = users.ToList().Select(u => CreateStatRecord(u));
             await Task.WhenAll(tasks);
-            
+
             var usernames = users.ToList().Select(u => u.Username);
 
             // don't really need to pass a user, but await doesn't work well with methods which return void
             var user = await _UserRepo.SaveChanges(users.FirstOrDefault());
             return usernames.ToList();
+        }        
+        public async Task<List<Activity>> AddNewActivitiesForAllUsers()
+        {
+            var users = await _UserRepo.GetAllTrackableUsers();
+            
+            var activityTasks = users.ToList().Select(u => UpdateActivitiesForPlayer(u));
+            var activities = await Task.WhenAll(activityTasks);
+            
+            var updatedActivities = await _UserRepo.CreateActivities(activities.SelectMany( i => i ).ToList());           
+            // don't really need to pass a user, but await doesn't work well with methods which return void
+            return updatedActivities;
         }
 
         public async Task<Player> CreateNewUser(String username)
@@ -629,6 +642,32 @@ namespace dotnet5_webapp.Services
             
             var updatedPlayer = await _UserRepo.UnfollowPlayer(player, user);
             if (updatedPlayer == null)
+            {
+                response.Success = false;
+                response.Status = "Follow action failed.";
+                return response;
+            }
+
+            return response;
+        }        
+        public async Task<ResponseWrapper<Boolean>> UpdateRs3Rsn(String username, ApplicationUser user)
+        {
+            var response = new ResponseWrapper<Boolean>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var player = await _UserRepo.GetPlayerByUsername(username);
+            if (player == null)
+            {
+                response.Success = false;
+                response.Status = "Player does not exist in the database.";
+                return response;
+            }
+            
+            var updatedPlayer = await _UserRepo.UpdateRs3Rsn(username, user);
+            if (updatedPlayer == false)
             {
                 response.Success = false;
                 response.Status = "Follow action failed.";

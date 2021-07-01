@@ -17,6 +17,7 @@ namespace dotnet5_webapp.Repos
         Task<Player> SaveChanges(Player player);
         Task<Player> StartTrackingUser(Player player);
         Task<Player> FollowPlayer(Follow follow, ApplicationUser user);
+        Task<bool> UpdateRs3Rsn(string username, ApplicationUser user);
         Task<Player> UnfollowPlayer(Player player, ApplicationUser user);
         Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user);
         Task<List<Player>> GetAllUsers();

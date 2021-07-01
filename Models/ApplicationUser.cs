@@ -8,5 +8,7 @@ namespace dotnet5_webapp.Models
     public class ApplicationUser : IdentityUser
     {
         public ICollection<Follow> FollowingPlayers { get; set; }
+        public string Rs3Rsn { get; set; }
+        public string OsrsRsn { get; set; }
     }
 }
