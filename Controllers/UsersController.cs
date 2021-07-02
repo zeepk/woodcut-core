@@ -196,9 +196,9 @@ namespace dotnet5_webapp.Controllers
         }        
         
         [HttpGet("activities")]
-        public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetAllActivities()
+        public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetAllActivities([FromQuery] int size)
         {
-            var response = await UserService.GetAllActivities();
+            var response = await UserService.GetAllActivities(size);
             return Ok(response);
         }   
         

@@ -106,9 +106,9 @@ namespace dotnet5_webapp.Services
             return result;
         }
         
-        public async Task<List<Activity>> GetAllActivities()
+        public async Task<List<Activity>> GetAllActivities(int size)
         {
-            return await _UserRepo.GetAllActivities();
+            return await _UserRepo.GetLimitedActivities(size);
         }
         
         public async Task<ResponseWrapper<PlayerDetailsServiceResponse>> GetPlayerDetails(string username)

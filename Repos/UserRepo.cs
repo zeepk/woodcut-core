@@ -135,8 +135,12 @@ namespace dotnet5_webapp.Repos
         }
         public async Task<List<Activity>> GetAllActivities()
         {
-            return await Context.Activity.OrderByDescending(a => a.DateRecorded)
-                .ToListAsync();
+            return await Context.Activity.OrderByDescending(a => a.DateRecorded).ToListAsync();
+
+        }        
+        public async Task<List<Activity>> GetLimitedActivities(int size)
+        {
+            return await Context.Activity.OrderByDescending(a => a.DateRecorded).Include(a => a.Player).Take(size).ToListAsync();
         }
         public async Task<StatRecord> GetYesterdayRecord(int userId)
         {
