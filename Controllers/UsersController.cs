@@ -262,7 +262,7 @@ namespace dotnet5_webapp.Controllers
         
         [HttpPut("rs3rsn/{username}")]
         [Authorize]
-        public async Task<ActionResult<ResponseWrapper<Boolean>>> UpdateRs3Rsn(String username)
+        public async Task<ActionResult<ResponseWrapper<string>>> UpdateRs3Rsn(String username)
         {
             var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             var applicationUser = await UserService.SearchForUser(user);

@@ -650,9 +650,9 @@ namespace dotnet5_webapp.Services
 
             return response;
         }        
-        public async Task<ResponseWrapper<Boolean>> UpdateRs3Rsn(String username, ApplicationUser user)
+        public async Task<ResponseWrapper<string>> UpdateRs3Rsn(String username, ApplicationUser user)
         {
-            var response = new ResponseWrapper<Boolean>
+            var response = new ResponseWrapper<string>
             {
                 Success = true,
                 Status = ""
@@ -670,9 +670,11 @@ namespace dotnet5_webapp.Services
             if (updatedPlayer == false)
             {
                 response.Success = false;
-                response.Status = "Follow action failed.";
+                response.Status = "Rsn could not be updated.";
                 return response;
             }
+
+            response.Data = username;
 
             return response;
         }
