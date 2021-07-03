@@ -594,12 +594,12 @@ namespace dotnet5_webapp.Services
             response.Data = usernames;
             return response;
         }         
-        public async Task<ResponseWrapper<Boolean>> FollowPlayer(String username, ApplicationUser user)
+        public async Task<ResponseWrapper<String>> FollowPlayer(String username, ApplicationUser user)
         {
-            var response = new ResponseWrapper<Boolean>
+            var response = new ResponseWrapper<String>
             {
                 Success = true,
-                Status = ""
+                Status = "", Data = username
             };
             
             var player = await _UserRepo.GetPlayerByUsername(username);
@@ -626,12 +626,13 @@ namespace dotnet5_webapp.Services
 
             return response;
         } 
-        public async Task<ResponseWrapper<Boolean>> UnfollowPlayer(String username, ApplicationUser user)
+        public async Task<ResponseWrapper<String>> UnfollowPlayer(String username, ApplicationUser user)
         {
-            var response = new ResponseWrapper<Boolean>
+            var response = new ResponseWrapper<String>
             {
                 Success = true,
-                Status = ""
+                Status = "",
+                Data = username
             };
             
             var player = await _UserRepo.GetPlayerByUsername(username);

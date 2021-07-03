@@ -20,8 +20,8 @@ namespace dotnet5_webapp.Services
         Task<ResponseWrapper<PlayerMetricsServiceResponse>> GetPlayerMetrics(String username);
         Task<ResponseWrapper<PlayerQuestsServiceResponse>> GetPlayerQuests(String username);
         Task<ResponseWrapper<Boolean>> TrackUser(String username);
-        Task<ResponseWrapper<Boolean>> FollowPlayer(String username, ApplicationUser user);
-        Task<ResponseWrapper<Boolean>> UnfollowPlayer(String username, ApplicationUser user);
+        Task<ResponseWrapper<String>> FollowPlayer(String username, ApplicationUser user);
+        Task<ResponseWrapper<String>> UnfollowPlayer(String username, ApplicationUser user);
         Task<ResponseWrapper<string>> UpdateRs3Rsn(String username, ApplicationUser user);
         Task<ResponseWrapper<ICollection<String>>> GetFollowedPlayerNames(ApplicationUser user);
         Task<int> CurrentPlayerCount();

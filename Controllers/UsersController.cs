@@ -224,7 +224,7 @@ namespace dotnet5_webapp.Controllers
 
         [HttpPut("follow/{username}")]
         [Authorize]
-        public async Task<ActionResult<ResponseWrapper<Boolean>>> FollowPlayer(String username)
+        public async Task<ActionResult<ResponseWrapper<String>>> FollowPlayer(String username)
         {
             var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             var applicationUser = await UserService.SearchForUser(user);
@@ -235,7 +235,7 @@ namespace dotnet5_webapp.Controllers
         
         [HttpPut("unfollow/{username}")]
         [Authorize]
-        public async Task<ActionResult<ResponseWrapper<Boolean>>> UnfollowPlayer(String username)
+        public async Task<ActionResult<ResponseWrapper<String>>> UnfollowPlayer(String username)
         {
             var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             var applicationUser = await UserService.SearchForUser(user);
