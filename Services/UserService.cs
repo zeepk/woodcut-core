@@ -492,27 +492,32 @@ namespace dotnet5_webapp.Services
                 
                 // one skill at a time
                 var currentSkill = currentSkills.ElementAt(i);
-                var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-
-                if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
-                {
-                    daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
-                    weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
-                    monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
-                    yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
-                }
-
+                
                 skillGain.SkillId = currentSkill.SkillId;
                 skillGain.Xp = currentSkill.Xp;
                 skillGain.Level = currentSkill.Level;
                 skillGain.Rank = currentSkill.Rank;
-                skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
-                skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
-                skillGain.MonthGain = currentSkill.Xp - monthSkill.Xp;
-                skillGain.YearGain = currentSkill.Xp - yearSkill.Xp;
+
+                if (user.IsTracking)
+                {
+                    var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+
+                    if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
+                    {
+                        daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
+                        weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
+                        monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
+                        yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
+                    }
+
+                    skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
+                    skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
+                    skillGain.MonthGain = currentSkill.Xp - monthSkill.Xp;
+                    skillGain.YearGain = currentSkill.Xp - yearSkill.Xp;
+                }
                 skillGains.Add(skillGain);
             }
             for (var i = 0; i < currentMinigames.Count - 1; i++)
@@ -520,26 +525,31 @@ namespace dotnet5_webapp.Services
                 var minigameGain = new MinigameGain();
                 
                 var currentMinigame = currentMinigames.ElementAt(i);
-                var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                var monthMinigame = monthRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                var yearMinigame = yearRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                
-                if (dayMinigame.Score < 0 || weekMinigame.Score < 0 || monthMinigame.Score < 0 || yearMinigame.Score < 0)
-                {
-                    dayMinigame.Score = dayMinigame.Score < 0 ? 0 : dayMinigame.Score;
-                    weekMinigame.Score = weekMinigame.Score < 0 ? 0 : weekMinigame.Score;
-                    monthMinigame.Score = monthMinigame.Score < 0 ? 0 : monthMinigame.Score;
-                    yearMinigame.Score = yearMinigame.Score < 0 ? 0 : yearMinigame.Score;
-                }
                 
                 minigameGain.MinigameId = currentMinigame.MinigameId;
                 minigameGain.Score = currentMinigame.Score;
                 minigameGain.Rank = currentMinigame.Rank;
-                minigameGain.DayGain = currentMinigame.Score - dayMinigame.Score;
-                minigameGain.WeekGain = currentMinigame.Score - weekMinigame.Score;
-                minigameGain.MonthGain = currentMinigame.Score - monthMinigame.Score;
-                minigameGain.YearGain = currentMinigame.Score - yearMinigame.Score;
+
+                if (user.IsTracking)
+                {
+                    var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    var monthMinigame = monthRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    var yearMinigame = yearRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    
+                    if (dayMinigame.Score < 0 || weekMinigame.Score < 0 || monthMinigame.Score < 0 || yearMinigame.Score < 0)
+                    {
+                        dayMinigame.Score = dayMinigame.Score < 0 ? 0 : dayMinigame.Score;
+                        weekMinigame.Score = weekMinigame.Score < 0 ? 0 : weekMinigame.Score;
+                        monthMinigame.Score = monthMinigame.Score < 0 ? 0 : monthMinigame.Score;
+                        yearMinigame.Score = yearMinigame.Score < 0 ? 0 : yearMinigame.Score;
+                    }
+                    
+                    minigameGain.DayGain = currentMinigame.Score - dayMinigame.Score;
+                    minigameGain.WeekGain = currentMinigame.Score - weekMinigame.Score;
+                    minigameGain.MonthGain = currentMinigame.Score - monthMinigame.Score;
+                    minigameGain.YearGain = currentMinigame.Score - yearMinigame.Score;
+                }
                 minigameGains.Add(minigameGain);
             }
             
