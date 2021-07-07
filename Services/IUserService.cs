@@ -25,6 +25,6 @@ namespace dotnet5_webapp.Services
         Task<ResponseWrapper<string>> UpdateRs3Rsn(String username, ApplicationUser user);
         Task<ResponseWrapper<ICollection<String>>> GetFollowedPlayerNames(ApplicationUser user);
         Task<int> CurrentPlayerCount();
-        Task<List<Activity>> GetAllActivities(int size);
+        Task<List<ActivityResponse>> GetAllActivities(int size);
     }
 }

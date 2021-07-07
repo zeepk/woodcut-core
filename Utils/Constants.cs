@@ -14,6 +14,8 @@ namespace dotnet5_webapp.Utils
         public const string RunescapeApiPlayerMetricsUrlPost = "&activities=20";
         public const string RunescapeApiPlayerCount = "http://www.runescape.com/player_count.js?varname=iPlayerCount&callback=jQuery000000000000000_0000000000&_=0";
         public const string RunescapeApiQuestsUrl = "https://apps.runescape.com/runemetrics/quests?user=";
+        public const string ExternalApiItemPriceUrl = "https://api.weirdgloop.org/exchange/history/rs/latest?name=";
+        public const string RunescapeApiItemImageUrl = "https://secure.runescape.com/m=itemdb_rs/1625481579641_obj_big.gif?id=";
         public const string QuestStatusCompleted = "COMPLETED";
         public const string QuestStatusStarted = "STARTED";
         public const string QuestStatusNotStarted = "NOT_STARTED";

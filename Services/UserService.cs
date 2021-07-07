@@ -106,9 +106,12 @@ namespace dotnet5_webapp.Services
             return result;
         }
         
-        public async Task<List<Activity>> GetAllActivities(int size)
+        public async Task<List<ActivityResponse>> GetAllActivities(int size)
         {
-            return await _UserRepo.GetLimitedActivities(size);
+            var activityList = await _UserRepo.GetLimitedActivities(size);
+            var activityTasks =  activityList.Select(async a => await FormatActivity(a));
+            var activityResponses = await Task.WhenAll(activityTasks);
+            return activityResponses.ToList();
         }
         
         public async Task<ResponseWrapper<PlayerDetailsServiceResponse>> GetPlayerDetails(string username)
@@ -215,7 +218,7 @@ namespace dotnet5_webapp.Services
             data.Username = name;
             data.QuestsComplete = questsComplete;
 
-            data.Activities = new List<Activity>();
+            var activityList = new List<Activity>();
             JArray activities = (JArray)joResponse ["activities"];
             foreach (var activity in activities)
             {
@@ -229,10 +232,14 @@ namespace dotnet5_webapp.Services
                     Title = activity.Value<String>("text"),
                     Details = activity.Value<String>("details"),
                 };
-                data.Activities.Add(newActivity);
+                activityList.Add(newActivity);
             }
 
-            var addedActivities = await _UserRepo.CreateActivities(data.Activities);
+            var addedActivities = await _UserRepo.CreateActivities(activityList);
+
+            var activityTasks =  activityList.Select(async a => await FormatActivity(a));
+            var activityResponses = await Task.WhenAll(activityTasks);
+            data.Activities = activityResponses.ToList();
             }
             catch (Exception e)
             {
@@ -688,6 +695,93 @@ namespace dotnet5_webapp.Services
             }
 
             response.Data = username;
+
+            return response;
+        }
+
+        public async Task<ActivityResponse> FormatActivity(Activity activity)
+        {
+            var response = new ActivityResponse();
+            response.UserId = activity.UserId;
+            response.Id = activity.Id;
+            response.Player = activity.Player;
+            response.Title = activity.Title;
+            response.Details = activity.Details;
+            response.DateRecorded = activity.DateRecorded;
+
+            if (activity.Title.Contains("Levelled up "))
+            {
+                var level = activity.Details.Split("level ")[1].Replace(".", "");
+                var skill = activity.Title.Split("up ")[1].Replace(".", "");
+                response.Title = $"{skill} level {level}";
+            }
+            
+            if (activity.Title.Contains("XP in "))
+            {
+                var skill = activity.Title.Split("XP in ")[1].Replace(".", "");
+                var level = activity.Title.Split("XP in ")[0].Replace(".", "");
+                if (level.Substring(level.Length - 6) == "000000")
+                {
+                    level = level.Substring(0, level.Length - 6) + "m";
+                }
+                response.Title = $"{level} xp in {skill}";
+            }
+
+            // if (activity.Title.Contains("I killed "))
+            // {
+            //     var boss = activity.Title
+            //         .Split("I killed ")[1]
+            //         .Split(" ")[1]
+            //         .Replace(".", "");
+            //     var bossResponse = await OfficialApiCall("https://secure.runescape.com/m=itemdb_rs/bestiary/beastSearch.json?term=" + boss);
+            //     var joResponse = JArray.Parse(bossResponse);
+            //     var bossId = joResponse.FirstOrDefault()?.Value<int>("value");
+            //     var bossInfoApiUrl = "https://secure.runescape.com/m=itemdb_rs/bestiary/beastData.json?beastid=" + bossId;
+            //         
+            //     var bossInfoResponse = await OfficialApiCall(bossInfoApiUrl);
+            // }
+
+            if (activity.Title.Contains("I found "))
+            {
+                var item = new string("");
+                if (activity.Title.Contains("I found a "))
+                {
+                    item = activity.Title.Split("I found a ")[1];
+                } else if (activity.Title.Contains("I found an "))
+                {
+                    item = activity.Title.Split("I found an ")[1];
+                } else if (activity.Title.Contains("I found some "))
+                {
+                    item = activity.Title.Split("I found some ")[1];
+                }
+                else
+                {
+                    return response;
+                }
+                var itemPriceResponse =
+                    await OfficialApiCall(Constants.ExternalApiItemPriceUrl + item);
+                try
+                {
+                    IDictionary<string, JToken> joResponse = JObject.Parse(itemPriceResponse);
+                    var itemProperty = joResponse.First();
+                    var itemData = (JObject)itemProperty.Value;
+                    var price = (int)itemData["price"];
+                    response.Price = price;
+                    try
+                    {
+                        var itemId = (int)itemData["id"];
+                        response.IconUri = Constants.RunescapeApiItemImageUrl + itemId;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
 
             return response;
         }
