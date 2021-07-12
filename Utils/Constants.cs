@@ -61,5 +61,20 @@ namespace dotnet5_webapp.Utils
             MaxXp = 4,
             QuestCape = 5,
         }
+        public readonly string[] UnimportantActivities = {
+
+        };        
+        public string[] ImportantMilestones = {
+            "10",
+            "20",
+            "30",
+            "40",
+            "50",
+            "60",
+            "70",
+            "80",
+            "90",
+            "99",
+        };
     }
 }

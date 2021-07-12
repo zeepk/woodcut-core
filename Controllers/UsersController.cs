@@ -221,6 +221,19 @@ namespace dotnet5_webapp.Controllers
             var response = await UserService.GetFollowedPlayerNames(applicationUser);
             return Ok(response);
         }
+        
+        // following
+
+        [HttpGet("following/activities")]
+        [Authorize]
+        public async Task<ActionResult<ResponseWrapper<ICollection<ActivityResponse>>>> FollowingActivities([FromQuery] int size)
+        {
+            var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+            var applicationUser = await UserService.SearchForUser(user);
+
+            var response = await UserService.GetFollowedPlayerActivities(applicationUser, size);
+            return Ok(response);
+        }
 
         [HttpPut("follow/{username}")]
         [Authorize]

@@ -610,6 +610,20 @@ namespace dotnet5_webapp.Services
             var usernames = await _UserRepo.GetFollowedPlayerNames(user);
             response.Data = usernames;
             return response;
+        }          
+        public async Task<ResponseWrapper<ICollection<ActivityResponse>>> GetFollowedPlayerActivities(ApplicationUser user, int size)
+        {
+            var response = new ResponseWrapper<ICollection<ActivityResponse>>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var activities = await _UserRepo.GetFollowedPlayerActivities(user, size);
+            var activityTasks =  activities.Select(async a => await FormatActivity(a));
+            var activityResponses = await Task.WhenAll(activityTasks);
+            response.Data = activityResponses.ToList();
+            return response;
         }         
         public async Task<ResponseWrapper<String>> FollowPlayer(String username, ApplicationUser user)
         {
