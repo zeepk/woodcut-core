@@ -229,6 +229,21 @@ namespace dotnet5_webapp.Repos
             if (details.Contains("am now level") && !milestones.Contains(details.Substring(details.Length - 3, 2)))
             {
                 return false;
+            }             
+            if (details.Contains("000000 experience") && !details.Contains("0000000 experience"))
+            {
+                return false;
+            }            
+            if (details.Contains("tetracompass.") || 
+                details.Contains("triskelion") || 
+                details.Contains("Citadel") || 
+                details.Contains("treasure trail.") || 
+                details.Contains("mystery") || 
+                details.Contains("Mystery") || 
+                details.Contains("Fealty")
+            )
+            {
+                return false;
             }
 
             return true;

@@ -773,7 +773,7 @@ namespace dotnet5_webapp.Services
                     return response;
                 }
                 var itemPriceResponse =
-                    await OfficialApiCall(Constants.ExternalApiItemPriceUrl + item);
+                    await OfficialApiCall(Constants.ExternalApiItemPriceUrl + item.Replace(".", ""));
                 try
                 {
                     IDictionary<string, JToken> joResponse = JObject.Parse(itemPriceResponse);
@@ -784,7 +784,13 @@ namespace dotnet5_webapp.Services
                     try
                     {
                         var itemId = (int)itemData["id"];
-                        response.IconUri = Constants.RunescapeApiItemImageUrl + itemId;
+                        var itemDetailsResponseString =
+                            await OfficialApiCall(Constants.RunescapeApiItemDetailsUrl + itemId);
+                        IDictionary<string, JToken> itemDetailsJoResponse = JObject.Parse(itemDetailsResponseString);
+                        var itemDetailsProperty = itemDetailsJoResponse.First();
+                        var itemDetailsData = (JObject)itemDetailsProperty.Value;
+                        var iconUri = (string)itemDetailsData["icon_large"];
+                        response.IconUri = iconUri;
                     }
                     catch (Exception e)
                     {
