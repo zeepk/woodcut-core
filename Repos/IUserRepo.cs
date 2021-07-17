@@ -20,9 +20,11 @@ namespace dotnet5_webapp.Repos
         Task<bool> UpdateRs3Rsn(string username, ApplicationUser user);
         Task<Player> UnfollowPlayer(Player player, ApplicationUser user);
         Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user);
+        Task<ICollection<Activity>> GetFollowedPlayerActivities(ApplicationUser user, int size);
         Task<List<Player>> GetAllUsers();
         Task<List<Player>> GetAllTrackableUsers();
         Task<List<Activity>> GetAllActivities();
+        Task<List<Activity>> GetLimitedActivities(int size);
         Task<StatRecord> GetYesterdayRecord(int userId);
         Task<StatRecord> GetWeekRecord(int userId);
         Task<StatRecord> GetMonthRecord(int userId);

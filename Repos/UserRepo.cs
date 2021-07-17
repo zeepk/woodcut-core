@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using dotnet5_webapp.Data;
 using dotnet5_webapp.Models;
+using dotnet5_webapp.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace dotnet5_webapp.Repos
@@ -110,15 +112,36 @@ namespace dotnet5_webapp.Repos
         }        
         public async Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user)
         {
-            // var users = user.FollowingIds.Select(id => GetPlayerById(id));
-            // var players = Context.User
-            //     .Where(p => user.FollowingIds.Contains(p.Id));
-            // return await players.Select(p => p.Username).ToListAsync();
-
             return await Context.Follow
+                .Where(f => f.User == user)
                 .Include(f => f.Player)
                 .Select(f => f.Player.Username)
                 .ToListAsync();
+        }        
+        public async Task<ICollection<Activity>> GetFollowedPlayerActivities(ApplicationUser user, int size)
+        {
+            // does the same thing, just another option if DbContext issues arise
+            
+            // var names = await GetFollowedPlayerNames(user);
+            // var activities = await Context.Activity
+            //     .Include(a => a.Player)
+            //     .Where(a => names.Contains(a.Player.DisplayName))
+            //     .OrderByDescending(a => a.DateRecorded)
+            //     .ToListAsync();
+            
+            var activities = await Context.Follow
+                .Where(f => f.User == user)
+                .Include(f => f.Player)
+                .Join(Context.Activity.Include(a => a.Player), f => f.Player.Id, a => a.Player.Id, 
+                    (f, a) => a)
+                .OrderByDescending(a => a.DateRecorded)
+                .ToListAsync();
+                
+            return activities
+                .Where(a => isImportantActivity(a.Title, a.Details))
+                .Take(size)
+                .ToList();
+
         }
         public async Task<List<Player>> GetAllUsers()
         {
@@ -135,8 +158,16 @@ namespace dotnet5_webapp.Repos
         }
         public async Task<List<Activity>> GetAllActivities()
         {
-            return await Context.Activity.OrderByDescending(a => a.DateRecorded)
-                .ToListAsync();
+            return await Context.Activity.OrderByDescending(a => a.DateRecorded).ToListAsync();
+
+        }        
+        public async Task<List<Activity>> GetLimitedActivities(int size)
+        {
+            var activities = await Context.Activity.OrderByDescending(a => a.DateRecorded).Include(a => a.Player).ToListAsync(); 
+            return activities
+                .Where(a => isImportantActivity(a.Title, a.Details))
+                .Take(size)
+                .ToList();
         }
         public async Task<StatRecord> GetYesterdayRecord(int userId)
         {
@@ -174,6 +205,48 @@ namespace dotnet5_webapp.Repos
                 .Include(r => r.Minigames.OrderBy(s => s.MinigameId))
                 .FirstOrDefaultAsync();
             return record;
+        }
+        
+        private bool isImportantActivity(string title, string details)
+        {
+            var milestones = new List<string>()
+            {
+                "10",
+                "20",
+                "30",
+                "40",
+                "50",
+                "60",
+                "70",
+                "80",
+                "90",
+                "99",
+            };
+            if (title.Contains("all skills over") && !milestones.Contains(title.Substring(title.Length - 2)))
+            {
+                return false;
+            }            
+            if (details.Contains("am now level") && !milestones.Contains(details.Substring(details.Length - 3, 2)))
+            {
+                return false;
+            }             
+            if (details.Contains("000000 experience") && !details.Contains("0000000 experience"))
+            {
+                return false;
+            }            
+            if (details.Contains("tetracompass.") || 
+                details.Contains("triskelion") || 
+                details.Contains("Citadel") || 
+                details.Contains("treasure trail.") || 
+                details.Contains("mystery") || 
+                details.Contains("Mystery") || 
+                details.Contains("Fealty")
+            )
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

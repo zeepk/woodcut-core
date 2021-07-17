@@ -196,9 +196,9 @@ namespace dotnet5_webapp.Controllers
         }        
         
         [HttpGet("activities")]
-        public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetAllActivities()
+        public async Task<ActionResult<ResponseWrapper<PlayerMetricsServiceResponse>>> GetAllActivities([FromQuery] int size)
         {
-            var response = await UserService.GetAllActivities();
+            var response = await UserService.GetAllActivities(size);
             return Ok(response);
         }   
         
@@ -221,10 +221,23 @@ namespace dotnet5_webapp.Controllers
             var response = await UserService.GetFollowedPlayerNames(applicationUser);
             return Ok(response);
         }
+        
+        // following
+
+        [HttpGet("following/activities")]
+        [Authorize]
+        public async Task<ActionResult<ResponseWrapper<ICollection<ActivityResponse>>>> FollowingActivities([FromQuery] int size)
+        {
+            var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+            var applicationUser = await UserService.SearchForUser(user);
+
+            var response = await UserService.GetFollowedPlayerActivities(applicationUser, size);
+            return Ok(response);
+        }
 
         [HttpPut("follow/{username}")]
         [Authorize]
-        public async Task<ActionResult<ResponseWrapper<Boolean>>> FollowPlayer(String username)
+        public async Task<ActionResult<ResponseWrapper<String>>> FollowPlayer(String username)
         {
             var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             var applicationUser = await UserService.SearchForUser(user);
@@ -235,7 +248,7 @@ namespace dotnet5_webapp.Controllers
         
         [HttpPut("unfollow/{username}")]
         [Authorize]
-        public async Task<ActionResult<ResponseWrapper<Boolean>>> UnfollowPlayer(String username)
+        public async Task<ActionResult<ResponseWrapper<String>>> UnfollowPlayer(String username)
         {
             var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             var applicationUser = await UserService.SearchForUser(user);
@@ -262,7 +275,7 @@ namespace dotnet5_webapp.Controllers
         
         [HttpPut("rs3rsn/{username}")]
         [Authorize]
-        public async Task<ActionResult<ResponseWrapper<Boolean>>> UpdateRs3Rsn(String username)
+        public async Task<ActionResult<ResponseWrapper<string>>> UpdateRs3Rsn(String username)
         {
             var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
             var applicationUser = await UserService.SearchForUser(user);

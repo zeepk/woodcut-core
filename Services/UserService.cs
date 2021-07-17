@@ -106,9 +106,12 @@ namespace dotnet5_webapp.Services
             return result;
         }
         
-        public async Task<List<Activity>> GetAllActivities()
+        public async Task<List<ActivityResponse>> GetAllActivities(int size)
         {
-            return await _UserRepo.GetAllActivities();
+            var activityList = await _UserRepo.GetLimitedActivities(size);
+            var activityTasks =  activityList.Select(async a => await FormatActivity(a));
+            var activityResponses = await Task.WhenAll(activityTasks);
+            return activityResponses.ToList();
         }
         
         public async Task<ResponseWrapper<PlayerDetailsServiceResponse>> GetPlayerDetails(string username)
@@ -215,11 +218,12 @@ namespace dotnet5_webapp.Services
             data.Username = name;
             data.QuestsComplete = questsComplete;
 
-            data.Activities = new List<Activity>();
+            var activityList = new List<Activity>();
             JArray activities = (JArray)joResponse ["activities"];
             foreach (var activity in activities)
             {
-                var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
+                var dateString = activity.Value<String>("date") + " GMT";
+                var dateRecorded = DateTime.Parse(dateString);
                 var newActivity = new Activity()
                 {
                     Player = user,
@@ -228,10 +232,14 @@ namespace dotnet5_webapp.Services
                     Title = activity.Value<String>("text"),
                     Details = activity.Value<String>("details"),
                 };
-                data.Activities.Add(newActivity);
+                activityList.Add(newActivity);
             }
 
-            var addedActivities = await _UserRepo.CreateActivities(data.Activities);
+            var addedActivities = await _UserRepo.CreateActivities(activityList);
+
+            var activityTasks =  activityList.Select(async a => await FormatActivity(a));
+            var activityResponses = await Task.WhenAll(activityTasks);
+            data.Activities = activityResponses.ToList();
             }
             catch (Exception e)
             {
@@ -262,7 +270,8 @@ namespace dotnet5_webapp.Services
                 JArray jsonActivities = (JArray)joResponse ["activities"];
                 foreach (var activity in jsonActivities)
                 {
-                    var dateRecorded = DateTime.Parse(activity.Value<String>("date"));
+                    var dateString = activity.Value<String>("date");
+                    var dateRecorded = DateTime.Parse(dateString + " GMT");
                     var newActivity = new Activity()
                     {
                         Player = player,
@@ -490,27 +499,32 @@ namespace dotnet5_webapp.Services
                 
                 // one skill at a time
                 var currentSkill = currentSkills.ElementAt(i);
-                var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-                var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
-
-                if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
-                {
-                    daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
-                    weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
-                    monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
-                    yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
-                }
-
+                
                 skillGain.SkillId = currentSkill.SkillId;
                 skillGain.Xp = currentSkill.Xp;
                 skillGain.Level = currentSkill.Level;
                 skillGain.Rank = currentSkill.Rank;
-                skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
-                skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
-                skillGain.MonthGain = currentSkill.Xp - monthSkill.Xp;
-                skillGain.YearGain = currentSkill.Xp - yearSkill.Xp;
+
+                if (user.IsTracking)
+                {
+                    var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+
+                    if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
+                    {
+                        daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
+                        weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
+                        monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
+                        yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
+                    }
+
+                    skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
+                    skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
+                    skillGain.MonthGain = currentSkill.Xp - monthSkill.Xp;
+                    skillGain.YearGain = currentSkill.Xp - yearSkill.Xp;
+                }
                 skillGains.Add(skillGain);
             }
             for (var i = 0; i < currentMinigames.Count - 1; i++)
@@ -518,26 +532,31 @@ namespace dotnet5_webapp.Services
                 var minigameGain = new MinigameGain();
                 
                 var currentMinigame = currentMinigames.ElementAt(i);
-                var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                var monthMinigame = monthRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                var yearMinigame = yearRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
-                
-                if (dayMinigame.Score < 0 || weekMinigame.Score < 0 || monthMinigame.Score < 0 || yearMinigame.Score < 0)
-                {
-                    dayMinigame.Score = dayMinigame.Score < 0 ? 0 : dayMinigame.Score;
-                    weekMinigame.Score = weekMinigame.Score < 0 ? 0 : weekMinigame.Score;
-                    monthMinigame.Score = monthMinigame.Score < 0 ? 0 : monthMinigame.Score;
-                    yearMinigame.Score = yearMinigame.Score < 0 ? 0 : yearMinigame.Score;
-                }
                 
                 minigameGain.MinigameId = currentMinigame.MinigameId;
                 minigameGain.Score = currentMinigame.Score;
                 minigameGain.Rank = currentMinigame.Rank;
-                minigameGain.DayGain = currentMinigame.Score - dayMinigame.Score;
-                minigameGain.WeekGain = currentMinigame.Score - weekMinigame.Score;
-                minigameGain.MonthGain = currentMinigame.Score - monthMinigame.Score;
-                minigameGain.YearGain = currentMinigame.Score - yearMinigame.Score;
+
+                if (user.IsTracking)
+                {
+                    var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    var monthMinigame = monthRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    var yearMinigame = yearRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
+                    
+                    if (dayMinigame.Score < 0 || weekMinigame.Score < 0 || monthMinigame.Score < 0 || yearMinigame.Score < 0)
+                    {
+                        dayMinigame.Score = dayMinigame.Score < 0 ? 0 : dayMinigame.Score;
+                        weekMinigame.Score = weekMinigame.Score < 0 ? 0 : weekMinigame.Score;
+                        monthMinigame.Score = monthMinigame.Score < 0 ? 0 : monthMinigame.Score;
+                        yearMinigame.Score = yearMinigame.Score < 0 ? 0 : yearMinigame.Score;
+                    }
+                    
+                    minigameGain.DayGain = currentMinigame.Score - dayMinigame.Score;
+                    minigameGain.WeekGain = currentMinigame.Score - weekMinigame.Score;
+                    minigameGain.MonthGain = currentMinigame.Score - monthMinigame.Score;
+                    minigameGain.YearGain = currentMinigame.Score - yearMinigame.Score;
+                }
                 minigameGains.Add(minigameGain);
             }
             
@@ -591,13 +610,27 @@ namespace dotnet5_webapp.Services
             var usernames = await _UserRepo.GetFollowedPlayerNames(user);
             response.Data = usernames;
             return response;
-        }         
-        public async Task<ResponseWrapper<Boolean>> FollowPlayer(String username, ApplicationUser user)
+        }          
+        public async Task<ResponseWrapper<ICollection<ActivityResponse>>> GetFollowedPlayerActivities(ApplicationUser user, int size)
         {
-            var response = new ResponseWrapper<Boolean>
+            var response = new ResponseWrapper<ICollection<ActivityResponse>>
             {
                 Success = true,
                 Status = ""
+            };
+            
+            var activities = await _UserRepo.GetFollowedPlayerActivities(user, size);
+            var activityTasks =  activities.Select(async a => await FormatActivity(a));
+            var activityResponses = await Task.WhenAll(activityTasks);
+            response.Data = activityResponses.ToList();
+            return response;
+        }         
+        public async Task<ResponseWrapper<String>> FollowPlayer(String username, ApplicationUser user)
+        {
+            var response = new ResponseWrapper<String>
+            {
+                Success = true,
+                Status = "", Data = username
             };
             
             var player = await _UserRepo.GetPlayerByUsername(username);
@@ -624,12 +657,13 @@ namespace dotnet5_webapp.Services
 
             return response;
         } 
-        public async Task<ResponseWrapper<Boolean>> UnfollowPlayer(String username, ApplicationUser user)
+        public async Task<ResponseWrapper<String>> UnfollowPlayer(String username, ApplicationUser user)
         {
-            var response = new ResponseWrapper<Boolean>
+            var response = new ResponseWrapper<String>
             {
                 Success = true,
-                Status = ""
+                Status = "",
+                Data = username
             };
             
             var player = await _UserRepo.GetPlayerByUsername(username);
@@ -650,9 +684,9 @@ namespace dotnet5_webapp.Services
 
             return response;
         }        
-        public async Task<ResponseWrapper<Boolean>> UpdateRs3Rsn(String username, ApplicationUser user)
+        public async Task<ResponseWrapper<string>> UpdateRs3Rsn(String username, ApplicationUser user)
         {
-            var response = new ResponseWrapper<Boolean>
+            var response = new ResponseWrapper<string>
             {
                 Success = true,
                 Status = ""
@@ -670,8 +704,103 @@ namespace dotnet5_webapp.Services
             if (updatedPlayer == false)
             {
                 response.Success = false;
-                response.Status = "Follow action failed.";
+                response.Status = "Rsn could not be updated.";
                 return response;
+            }
+
+            response.Data = username;
+
+            return response;
+        }
+
+        public async Task<ActivityResponse> FormatActivity(Activity activity)
+        {
+            var response = new ActivityResponse();
+            response.UserId = activity.UserId;
+            response.Id = activity.Id;
+            response.Player = activity.Player;
+            response.Title = activity.Title;
+            response.Details = activity.Details;
+            response.DateRecorded = activity.DateRecorded;
+
+            if (activity.Title.Contains("Levelled up "))
+            {
+                var level = activity.Details.Split("level ")[1].Replace(".", "");
+                var skill = activity.Title.Split("up ")[1].Replace(".", "");
+                response.Title = $"{skill} level {level}";
+            }
+            
+            if (activity.Title.Contains("XP in "))
+            {
+                var skill = activity.Title.Split("XP in ")[1].Replace(".", "");
+                var level = activity.Title.Split("XP in ")[0].Replace(".", "");
+                if (level.Substring(level.Length - 6) == "000000")
+                {
+                    level = level.Substring(0, level.Length - 6) + "m";
+                }
+                response.Title = $"{level} xp in {skill}";
+            }
+
+            // if (activity.Title.Contains("I killed "))
+            // {
+            //     var boss = activity.Title
+            //         .Split("I killed ")[1]
+            //         .Split(" ")[1]
+            //         .Replace(".", "");
+            //     var bossResponse = await OfficialApiCall("https://secure.runescape.com/m=itemdb_rs/bestiary/beastSearch.json?term=" + boss);
+            //     var joResponse = JArray.Parse(bossResponse);
+            //     var bossId = joResponse.FirstOrDefault()?.Value<int>("value");
+            //     var bossInfoApiUrl = "https://secure.runescape.com/m=itemdb_rs/bestiary/beastData.json?beastid=" + bossId;
+            //         
+            //     var bossInfoResponse = await OfficialApiCall(bossInfoApiUrl);
+            // }
+
+            if (activity.Title.Contains("I found "))
+            {
+                var item = new string("");
+                if (activity.Title.Contains("I found a "))
+                {
+                    item = activity.Title.Split("I found a ")[1];
+                } else if (activity.Title.Contains("I found an "))
+                {
+                    item = activity.Title.Split("I found an ")[1];
+                } else if (activity.Title.Contains("I found some "))
+                {
+                    item = activity.Title.Split("I found some ")[1];
+                }
+                else
+                {
+                    return response;
+                }
+                var itemPriceResponse =
+                    await OfficialApiCall(Constants.ExternalApiItemPriceUrl + item.Replace(".", ""));
+                try
+                {
+                    IDictionary<string, JToken> joResponse = JObject.Parse(itemPriceResponse);
+                    var itemProperty = joResponse.First();
+                    var itemData = (JObject)itemProperty.Value;
+                    var price = (int)itemData["price"];
+                    response.Price = price;
+                    try
+                    {
+                        var itemId = (int)itemData["id"];
+                        var itemDetailsResponseString =
+                            await OfficialApiCall(Constants.RunescapeApiItemDetailsUrl + itemId);
+                        IDictionary<string, JToken> itemDetailsJoResponse = JObject.Parse(itemDetailsResponseString);
+                        var itemDetailsProperty = itemDetailsJoResponse.First();
+                        var itemDetailsData = (JObject)itemDetailsProperty.Value;
+                        var iconUri = (string)itemDetailsData["icon_large"];
+                        response.IconUri = iconUri;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
 
             return response;

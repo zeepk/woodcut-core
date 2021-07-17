@@ -8,6 +8,6 @@ namespace dotnet5_webapp.Internal
     {
         public String Username { get; set; }
         public int QuestsComplete { get; set; }
-        public List<Activity> Activities { get; set; }
+        public List<ActivityResponse> Activities { get; set; }
     }
 }
