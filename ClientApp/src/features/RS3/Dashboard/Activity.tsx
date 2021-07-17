@@ -5,9 +5,9 @@ import { ProgressBar } from 'primereact/progressbar';
 import { DateTime } from 'luxon';
 
 import '../rs3.scss';
-import { Rs3Activity } from 'features/RS3/rs3Types';
-import { avatarUrlPre, avatarUrlPost } from 'utils/constants';
-import { activityIconHelper } from 'utils/helperFunctions';
+import { Rs3Activity } from '../../../features/RS3/rs3Types';
+import { avatarUrlPre, avatarUrlPost } from '../../../utils/constants';
+import { activityIconHelper } from '../../../utils/helperFunctions';
 
 type props = {
 	activity: Rs3Activity;
