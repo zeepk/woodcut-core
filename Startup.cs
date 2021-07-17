@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 
 namespace dotnet5_webapp
 {
@@ -83,6 +84,11 @@ namespace dotnet5_webapp
               .AllowAnyMethod()
               .AllowAnyHeader();
    }));
+            
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,6 +113,18 @@ namespace dotnet5_webapp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+            
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
             });
         }
     }

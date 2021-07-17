@@ -1,0 +1,194 @@
+@import '../../App.scss';
+@media (max-width: 500px) {
+	.p-datatable {
+		width: 95vw;
+		overflow: scroll;
+
+		.p-datatable-wrapper {
+			width: 100% !important;
+
+			.grid {
+				width: 100% !important;
+			}
+		}
+
+		.column--icon {
+			width: 1rem !important;
+			color: transparent;
+		}
+
+		.column--other-gains {
+			width: 10rem !important;
+		}
+	}
+}
+.container--player-details {
+	margin-bottom: 5rem;
+
+	.container--details-data {
+		min-width: 25rem;
+		max-width: 95vw;
+	}
+	.container--details-charts {
+		.container--chart {
+			width: 25rem;
+
+			.container--switch {
+				width: 100%;
+
+				.text--switch-label {
+					width: 8rem;
+					color: gray;
+
+					&.active {
+						color: white;
+					}
+				}
+			}
+		}
+	}
+	.container--details-activities {
+		color: white;
+	}
+}
+h1,
+.container--player-info {
+	color: #fff;
+
+	.container--badges {
+		margin-top: 0.2rem;
+	}
+}
+.container--player-info {
+	.container--avatar {
+		height: 80px;
+		width: 80px;
+
+		.img--avatar {
+			height: 80px;
+			width: 80px;
+		}
+	}
+}
+.icon--player-info {
+	height: 1.5rem;
+	margin-bottom: -4px;
+}
+.p-datatable {
+	margin-bottom: 5rem;
+
+	.gain {
+		color: $gainzGreen;
+	}
+	.column--icon {
+		width: 5rem;
+
+		.body--icon {
+			display: flex;
+		}
+		.body--icon > img {
+			margin-right: 4px;
+		}
+	}
+	.column--xp {
+		width: 8rem;
+	}
+	.column--level {
+		width: 6rem;
+	}
+	.column--rank {
+		width: 6rem;
+	}
+	.column--day {
+		width: 6rem;
+	}
+	.column--other-gains {
+		width: 6rem;
+	}
+}
+.tab--quest-icon {
+	content: url('../../assets/images/questIcon.png');
+	height: 1rem;
+}
+.tab--skills-icon {
+	content: url('../../assets/skillIcons/1_overall.png');
+	height: 1rem;
+}
+.container--logged-out-user {
+	color: white;
+
+	.container--half {
+		padding-top: 10vh;
+		width: 100%;
+
+		.text--home-content {
+			min-height: 20vh;
+		}
+
+		.progressbar--activity-list {
+			height: 0.5rem;
+			width: 20rem;
+		}
+	}
+}
+.container--logged-in-user {
+	color: white;
+
+	.container--home-activities {
+		border-radius: 1rem;
+		border: 1px solid gray;
+
+		.progressbar--activity-list {
+			height: 0.5rem;
+			width: 20rem;
+		}
+	}
+}
+.container--activity-list {
+	max-width: 90vw;
+	width: 30rem;
+	height: 40rem;
+	overflow-y: scroll;
+	overflow-x: hidden;
+
+	.link--activity-user {
+		color: white;
+		text-decoration: none;
+
+		.container--activity {
+			border-bottom: 1px solid silver;
+
+			.container--user {
+				height: 3rem;
+			}
+
+			.img--activity-avatar {
+				height: 2rem;
+			}
+
+			.container--entry {
+				min-height: 3rem;
+				text-align: right;
+
+				.text--date {
+					font-size: 0.7rem;
+					width: 8rem;
+				}
+
+				.text--price {
+					font-size: 0.7rem;
+					color: $gainzGreen;
+				}
+
+				.img--activity-icon {
+					max-width: 2rem;
+					max-height: 2rem;
+				}
+			}
+
+			.progressbar--activity {
+				height: 0.2rem;
+			}
+		}
+	}
+}
