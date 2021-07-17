@@ -1,0 +1,132 @@
+@import '../../App.scss';
+.container--home-text {
+	color: white;
+}
+.progressbar--follow {
+	width: 3rem;
+	height: 0.1rem !important;
+}
+.p-menubar.navbar {
+	background: #2c2f31;
+	border: none;
+
+	&.p-menubar-mobile-active {
+		.p-menubar-root-list {
+			width: 100%;
+			height: 20rem;
+
+			.p-menuitem {
+				margin: 1rem;
+			}
+
+			.container--player-count {
+				min-width: 8rem;
+				margin-left: 4rem;
+
+				.player-count {
+					font-size: 1rem;
+				}
+			}
+
+			.container--search-form {
+				padding-left: 1.5rem;
+			}
+
+			.container--auth-buttons {
+				width: 100% !important;
+				padding-left: 1rem;
+				width: 13rem;
+			}
+		}
+	}
+
+	.p-menubar-button {
+		margin-left: auto;
+	}
+
+	.p-menubar-root-list {
+		width: 100%;
+
+		.container--player-count {
+			min-width: 8rem;
+			margin-left: auto;
+			margin-right: 1rem;
+
+			.player-count {
+				font-size: 0.8rem;
+			}
+		}
+
+		.container--auth-buttons {
+			width: 13rem;
+		}
+	}
+}
+.navbar-item {
+	color: white;
+	text-decoration: none;
+}
+.navbar-item:hover {
+	opacity: 0.75;
+}
+.img--logo {
+	max-height: 40px;
+	max-width: 20vw;
+}
+.icon--search {
+	background: url('../../assets/images/woodcutting_icon.png') no-repeat;
+	width: 20px;
+	height: 20px;
+}
+.fullscreen {
+	min-width: 100vw;
+	height: 80vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.fullscreen > i {
+	background-size: 4rem;
+	width: 4rem;
+	height: 5rem;
+	animation-duration: 0.5s;
+}
+.p-chip-image > img {
+	padding: 2px;
+	border-radius: 0 !important;
+	margin: 0 !important;
+	max-height: 1.8rem !important;
+	width: auto !important;
+}
+.p-progressbar.progressbar {
+	height: 0.1rem;
+	width: 90%;
+}
+.container--login-form-btn {
+	height: 2rem;
+}
+.container--create-form-btn {
+	height: 2rem;
+}
+.p-progressbar.progressbar--login-form {
+	height: 0.1rem;
+}
+.p-progressbar.progressbar--create-form {
+	height: 0.1rem;
+}
+.p-progressbar.progressbar--player-count {
+	height: 0.1rem;
+	width: 100%;
+}
+.btn--login-form {
+	width: 100%;
+}
+.btn--create-form {
+	width: 100%;
+}
+.container--account-settings {
+	width: 20rem;
+	max-width: 90vw;
+	height: 20rem;
+	max-height: 90vh;
+}
