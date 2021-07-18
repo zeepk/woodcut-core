@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAppSelector, useAppDispatch } from 'app/hooks';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 
 import { ProgressBar } from 'primereact/progressbar';
 
@@ -12,20 +12,20 @@ import {
 	selectActivities,
 	selectActivitiesLoading,
 	selectClanname,
-} from 'features/RS3/rs3Slice';
+} from '../../../features/RS3/rs3Slice';
 import {
 	getRs3Rsn,
 	getFollowing,
 	selectUserRs3Rsn,
-} from 'features/Common/commonSlice';
-import LoadingIcon from 'features/Common/LoadingIcon';
-import { ActivityList } from 'features/RS3/Dashboard/ActivityList';
+} from '../../../features/Common/commonSlice';
+import LoadingIcon from '../../../features/Common/LoadingIcon';
+import { ActivityList } from '../../../features/RS3/Dashboard/ActivityList';
 import '../rs3.scss';
 import {
 	avatarUrlPre,
 	avatarUrlPost,
 	followingActivityFeedTitleText,
-} from 'utils/constants';
+} from '../../../utils/constants';
 
 export default function ExistingUserLandingPage() {
 	const [avatarLoading, updateAvatarLoading] = useState(true);

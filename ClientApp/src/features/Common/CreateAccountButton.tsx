@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { CreateForm } from 'features/Common/CreateForm';
-import { buttonTextCreateAccount } from 'utils/constants';
+import { CreateForm } from '../../features/Common/CreateForm';
+import { buttonTextCreateAccount } from '../../utils/constants';
 import './common.scss';
 
 export function CreateAccountButton() {

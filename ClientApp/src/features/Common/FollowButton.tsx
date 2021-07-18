@@ -10,7 +10,7 @@ import {
 	selectPlayersFollowed,
 	selectUserLoading,
 } from '../Common/commonSlice';
-import { followButtonText, unfollowButtonText } from 'utils/constants';
+import { followButtonText, unfollowButtonText } from '../../utils/constants';
 import './common.scss';
 
 type props = {

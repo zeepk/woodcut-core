@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../rs3.scss';
-import { useAppSelector } from 'app/hooks';
+import { useAppSelector } from '../../../app/hooks';
 
 import {
 	selectUsername,
@@ -9,12 +9,15 @@ import {
 	selectBadges,
 	selectClanname,
 	selectQuestPoints,
-} from 'features/RS3/rs3Slice';
-import { avatarUrlPre, avatarUrlPost } from 'utils/constants';
-import LoadingIcon from 'features/Common/LoadingIcon';
-import { Badge } from 'features/Common/Badge';
+} from '../../../features/RS3/rs3Slice';
+import { avatarUrlPre, avatarUrlPost } from '../../../utils/constants';
+import LoadingIcon from '../../../features/Common/LoadingIcon';
+import { Badge } from '../../../features/Common/Badge';
+// @ts-ignore
 import TotalXpIcon from 'assets/skillIcons/1_overall.png';
+// @ts-ignore
 import RunescoreIcon from 'assets/images/RuneScore.png';
+// @ts-ignore
 import QuestIcon from 'assets/images/questIcon.png';
 
 export default function Rs3PlayerInfo() {

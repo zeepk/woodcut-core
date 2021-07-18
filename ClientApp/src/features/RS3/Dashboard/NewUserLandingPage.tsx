@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from 'app/hooks';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 
 import { ProgressBar } from 'primereact/progressbar';
 
@@ -7,17 +7,18 @@ import {
 	selectActivities,
 	selectActivitiesLoading,
 	getRs3Activities,
-} from 'features/RS3/rs3Slice';
-import { ActivityList } from 'features/RS3/Dashboard/ActivityList';
-import { LoginButton } from 'features/Common/LoginButton';
-import { CreateAccountButton } from 'features/Common/CreateAccountButton';
+} from '../../../features/RS3/rs3Slice';
+import { ActivityList } from '../../../features/RS3/Dashboard/ActivityList';
+import { LoginButton } from '../../../features/Common/LoginButton';
+import { CreateAccountButton } from '../../../features/Common/CreateAccountButton';
 import '../rs3.scss';
 import {
 	homeContentText,
 	activityFeedTitleText,
 	rs3HomePageActivities,
-} from 'utils/constants';
-import Logo from 'assets/images/logo.png';
+} from '../../../utils/constants';
+// @ts-ignore
+import Logo from '../../../assets/images/logo.png';
 
 export default function NewUserLandingPage() {
 	const dispatch = useAppDispatch();

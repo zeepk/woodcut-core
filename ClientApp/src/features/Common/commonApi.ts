@@ -1,4 +1,4 @@
-import requestWrapper from 'utils/requestWrapper';
+import requestWrapper from '../../utils/requestWrapper';
 import {
 	checkUrl,
 	loginUrl,
@@ -8,11 +8,11 @@ import {
 	followUrl,
 	unfollowUrl,
 	followedUrl,
-} from 'utils/constants';
+} from '../../utils/constants';
 import {
 	AuthDataLogin,
 	AuthDataCreateAccount,
-} from 'features/Common/commonTypes';
+} from '../../features/Common/commonTypes';
 
 export async function checkIfUserLoggedIn(token: string) {
 	const requestOptions = {

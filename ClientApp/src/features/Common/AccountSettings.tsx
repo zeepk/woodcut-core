@@ -10,7 +10,7 @@ import {
 	selectUserLoading,
 	getRs3Rsn,
 	updateRs3Rsn,
-} from 'features/Common/commonSlice';
+} from '../../features/Common/commonSlice';
 import {
 	accountSettingsRs3RsnText,
 	accountSettingsRs3RsnUpdatePlaceholder,
@@ -18,8 +18,8 @@ import {
 	formErrorToastLifetime,
 	updateRsnErrorMessage,
 	rsnMaxLength,
-} from 'utils/constants';
-import { isNullUndefinedOrWhitespace } from 'utils/helperFunctions';
+} from '../../utils/constants';
+import { isNullUndefinedOrWhitespace } from '../../utils/helperFunctions';
 import './common.scss';
 
 export const AccountSettings = () => {

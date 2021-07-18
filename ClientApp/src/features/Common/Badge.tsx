@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Chip } from 'primereact/chip';
-import { badgeTypes } from 'utils/constants';
+import { badgeTypes } from '../../utils/constants';
 import './common.scss';
 
 type props = {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { LoginForm } from 'features/Common/LoginForm';
-import { buttonTextLogin } from 'utils/constants';
+import { LoginForm } from '../../features/Common/LoginForm';
+import { buttonTextLogin } from '../../utils/constants';
 import './common.scss';
 
 export function LoginButton() {

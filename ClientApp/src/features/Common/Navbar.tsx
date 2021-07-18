@@ -13,10 +13,11 @@ import {
 	getCurrentPlayerCount,
 	getRs3Rsn,
 	getFollowing,
-} from 'features/Common/commonSlice';
+} from '../../features/Common/commonSlice';
 import { NavbarItem } from './NavbarItem';
 import { AuthButton } from './AuthButton';
-import { navbarMenuItems, playerCountText } from 'utils/constants';
+import { navbarMenuItems, playerCountText } from '../../utils/constants';
+// @ts-ignore
 import Logo from '../../assets/images/logo.png';
 import 'features/Common/common.scss';
 

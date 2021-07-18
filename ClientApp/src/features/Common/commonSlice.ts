@@ -15,8 +15,8 @@ import {
 	AuthDataCreateAccount,
 	AuthDataLogin,
 	AuthResponseCreateAccount,
-} from 'features/Common/commonTypes';
-import { loginFormErrorMessage } from 'utils/constants';
+} from '../../features/Common/commonTypes';
+import { loginFormErrorMessage } from '../../utils/constants';
 import { AxiosResponse } from 'axios';
 
 export interface CommonState {
@@ -84,7 +84,7 @@ export const isUserLoggedIn = createAsyncThunk(
 
 		const response = await checkIfUserLoggedIn(token);
 		return response;
-	},
+	}
 );
 
 export const logIn = createAsyncThunk(
@@ -92,7 +92,7 @@ export const logIn = createAsyncThunk(
 	async (data: AuthDataLogin) => {
 		const response = await logUserIn(data);
 		return response;
-	},
+	}
 );
 
 export const createAccount = createAsyncThunk(
@@ -101,7 +101,7 @@ export const createAccount = createAsyncThunk(
 		const response: AxiosResponse<AuthResponseCreateAccount> =
 			await createUserAccount(data);
 		return response;
-	},
+	}
 );
 
 export const getCurrentPlayerCount = createAsyncThunk(
@@ -109,7 +109,7 @@ export const getCurrentPlayerCount = createAsyncThunk(
 	async () => {
 		const response = await getPlayerCount();
 		return response;
-	},
+	}
 );
 
 export const getRs3Rsn = createAsyncThunk('common/getrsn', async () => {
@@ -132,7 +132,7 @@ export const updateRs3Rsn = createAsyncThunk(
 
 		const response = await updateUserRsn(token, data);
 		return response;
-	},
+	}
 );
 
 export const followPlayerRsn = createAsyncThunk(
@@ -145,7 +145,7 @@ export const followPlayerRsn = createAsyncThunk(
 
 		const response = await followPlayer(token, data);
 		return response;
-	},
+	}
 );
 
 export const unfollowPlayerRsn = createAsyncThunk(
@@ -158,7 +158,7 @@ export const unfollowPlayerRsn = createAsyncThunk(
 
 		const response = await unfollowPlayer(token, data);
 		return response;
-	},
+	}
 );
 
 export const getFollowing = createAsyncThunk('common/following', async () => {
@@ -209,7 +209,7 @@ export const commonSlice = createSlice({
 			.addCase(unfollowPlayerRsn.fulfilled, (state, action) => {
 				state.account.loading = false;
 				state.account.following = state.account.following.filter(
-					(u) => u !== action.payload?.data.data,
+					(u) => u !== action.payload?.data.data
 				);
 			})
 			.addCase(getCurrentPlayerCount.pending, (state) => {

@@ -3,9 +3,9 @@ import '../rs3.scss';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useAppSelector } from '../../../app/hooks';
-import { selectMinigames } from 'features/RS3/rs3Slice';
-import { rs3DataArray } from 'utils/helperFunctions';
-import { gainPeriods } from 'utils/constants';
+import { selectMinigames } from '../../../features/RS3/rs3Slice';
+import { rs3DataArray } from '../../../utils/helperFunctions';
+import { gainPeriods } from '../../../utils/constants';
 import { Rs3Minigame } from '../rs3Types';
 import { Dropdown } from 'primereact/dropdown';
 
@@ -28,7 +28,7 @@ export default function Rs3PlayerStatTable() {
 			placeholder={gainPeriod.label}
 			onChange={(e) =>
 				setGainPeriod(
-					gainPeriods.find((gp) => gp.value === e.value) || gainPeriods[0],
+					gainPeriods.find((gp) => gp.value === e.value) || gainPeriods[0]
 				)
 			}
 		/>

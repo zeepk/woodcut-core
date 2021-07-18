@@ -13,10 +13,10 @@ import {
 import { TabMenu } from 'primereact/tabmenu';
 import Rs3PlayerStatTable from './Rs3PlayerStatTable';
 import Rs3PlayerMinigameTable from './Rs3PlayerMinigameTable';
-import PlayerDetails from 'features/RS3/Player/Details/PlayerDetails';
+import PlayerDetails from '../../../features/RS3/Player/Details/PlayerDetails';
 import Rs3PlayerInfo from './Rs3PlayerInfo';
 import LoadingIcon from '../../Common/LoadingIcon';
-import { userNotFoundText } from 'utils/constants';
+import { userNotFoundText } from '../../../utils/constants';
 interface RouteParams {
 	username: string;
 }

@@ -17,8 +17,8 @@ import {
 	loginFormPlaceholderEmail,
 	loginFormPlaceholderPassword,
 	formErrorToastLifetime,
-} from 'utils/constants';
-import { isNullUndefinedOrWhitespace } from 'utils/helperFunctions';
+} from '../../utils/constants';
+import { isNullUndefinedOrWhitespace } from '../../utils/helperFunctions';
 import './common.scss';
 
 type props = {

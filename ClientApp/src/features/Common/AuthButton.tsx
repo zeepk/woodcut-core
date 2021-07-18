@@ -9,10 +9,13 @@ import {
 import { Button } from 'primereact/button';
 import { ProgressBar } from 'primereact/progressbar';
 import { Dialog } from 'primereact/dialog';
-import { AccountSettings } from 'features/Common/AccountSettings';
-import { LoginButton } from 'features/Common/LoginButton';
-import { CreateAccountButton } from 'features/Common/CreateAccountButton';
-import { buttonTextLogout, buttonTextAccountSettings } from 'utils/constants';
+import { AccountSettings } from '../../features/Common/AccountSettings';
+import { LoginButton } from '../../features/Common/LoginButton';
+import { CreateAccountButton } from '../../features/Common/CreateAccountButton';
+import {
+	buttonTextLogout,
+	buttonTextAccountSettings,
+} from '../../utils/constants';
 import './common.scss';
 
 export function AuthButton() {
