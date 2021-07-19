@@ -270,8 +270,8 @@ namespace dotnet5_webapp.Services
                 JArray jsonActivities = (JArray)joResponse ["activities"];
                 foreach (var activity in jsonActivities)
                 {
-                    var dateString = activity.Value<String>("date");
-                    var dateRecorded = DateTime.Parse(dateString + " GMT");
+                    var dateString = activity.Value<String>("date") + " GMT";
+                    var dateRecorded = DateTime.Parse(dateString);
                     var newActivity = new Activity()
                     {
                         Player = player,
