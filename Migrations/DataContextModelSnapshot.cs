@@ -232,8 +232,8 @@ namespace dotnet5_webapp.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<DateTime>("DateRecorded")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("DateRecorded")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");

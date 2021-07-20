@@ -222,13 +222,11 @@ namespace dotnet5_webapp.Services
             JArray activities = (JArray)joResponse ["activities"];
             foreach (var activity in activities)
             {
-                var dateString = activity.Value<String>("date") + " GMT";
-                var dateRecorded = DateTime.Parse(dateString);
                 var newActivity = new Activity()
                 {
                     Player = user,
                     UserId = user.Id,
-                    DateRecorded = dateRecorded,
+                    DateRecorded = activity.Value<String>("date"),
                     Title = activity.Value<String>("text"),
                     Details = activity.Value<String>("details"),
                 };
@@ -264,23 +262,17 @@ namespace dotnet5_webapp.Services
             var activities = new List<Activity>();
             try
             {
-                if (player.Username != "zee fe")
-                {
-                    return activities;
-                }
                 var activityApiData = await OfficialApiCall(Constants.RunescapeApiPlayerMetricsUrlPre + player.Username + Constants.RunescapeApiPlayerMetricsUrlPost);
                 JObject joResponse = JObject.Parse(activityApiData);
             
                 JArray jsonActivities = (JArray)joResponse ["activities"];
                 foreach (var activity in jsonActivities)
                 {
-                    var dateString = activity.Value<String>("date") + " GMT";
-                    var dateRecorded = DateTime.Parse(dateString);
                     var newActivity = new Activity()
                     {
                         Player = player,
                         UserId = player.Id,
-                        DateRecorded = dateRecorded,
+                        DateRecorded = activity.Value<String>("date"),
                         Title = activity.Value<String>("text"),
                         Details = activity.Value<String>("details"),
                     };
