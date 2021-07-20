@@ -66,6 +66,22 @@ namespace dotnet5_webapp.Repos
             var updatedActivities = new List<Activity>();
             foreach (var activity in activities)
             {
+                if (activity.Title == "I killed 13 Dagannoth Kings.")
+                {
+                    Console.WriteLine(activity.Title);
+                    Console.WriteLine(activity.DateRecorded);
+                    Console.WriteLine(activity.Player);
+                    var test = await Context.Activity
+                        .Where(a => a.Title == activity.Title)
+                        .FirstOrDefaultAsync();
+                    if (test != null)
+                    {
+                    Console.WriteLine(test.Title);
+                    Console.WriteLine(test.DateRecorded);
+                    Console.WriteLine(test.Player);
+                        
+                    }
+                }
                 var doesActivityExist = await Context.Activity
                 .AnyAsync(a => a.Title == activity.Title && a.DateRecorded == activity.DateRecorded && a.Player == activity.Player);
                 if (!doesActivityExist)

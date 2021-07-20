@@ -264,6 +264,10 @@ namespace dotnet5_webapp.Services
             var activities = new List<Activity>();
             try
             {
+                if (player.Username != "zee fe")
+                {
+                    return activities;
+                }
                 var activityApiData = await OfficialApiCall(Constants.RunescapeApiPlayerMetricsUrlPre + player.Username + Constants.RunescapeApiPlayerMetricsUrlPost);
                 JObject joResponse = JObject.Parse(activityApiData);
             
@@ -272,6 +276,11 @@ namespace dotnet5_webapp.Services
                 {
                     var dateString = activity.Value<String>("date") + " GMT";
                     var dateRecorded = DateTime.Parse(dateString);
+                    if (activity.Value<String>("text") == "I killed 13 Dagannoth Kings.")
+                    {
+                        Console.WriteLine(activity.Value<String>("date") + " GMT");
+                        Console.WriteLine(dateRecorded);
+                    }
                     var newActivity = new Activity()
                     {
                         Player = player,
