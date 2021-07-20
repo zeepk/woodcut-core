@@ -276,11 +276,6 @@ namespace dotnet5_webapp.Services
                 {
                     var dateString = activity.Value<String>("date") + " GMT";
                     var dateRecorded = DateTime.Parse(dateString);
-                    if (activity.Value<String>("text") == "I killed 13 Dagannoth Kings.")
-                    {
-                        Console.WriteLine(activity.Value<String>("date") + " GMT");
-                        Console.WriteLine(dateRecorded);
-                    }
                     var newActivity = new Activity()
                     {
                         Player = player,
