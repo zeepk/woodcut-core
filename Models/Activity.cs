@@ -12,6 +12,7 @@ namespace dotnet5_webapp.Models
         public Player Player { get; set; }
         public string Title { get; set; }
         public string Details { get; set; }
-        public string DateRecorded { get; set; }
+        public string DateRecordedStamp { get; set; }
+        public DateTime DateRecorded { get; set; }
     }
 }

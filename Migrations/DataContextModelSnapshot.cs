@@ -232,7 +232,10 @@ namespace dotnet5_webapp.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("DateRecorded")
+                    b.Property<DateTime>("DateRecorded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DateRecordedStamp")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Details")

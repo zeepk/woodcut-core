@@ -67,7 +67,7 @@ namespace dotnet5_webapp.Repos
             foreach (var activity in activities)
             {
                 var doesActivityExist = await Context.Activity
-                .AnyAsync(a => a.Title == activity.Title && a.DateRecorded == activity.DateRecorded && a.Player == activity.Player);
+                .AnyAsync(a => a.Title == activity.Title && a.DateRecordedStamp == activity.DateRecordedStamp && a.Player == activity.Player);
                 if (!doesActivityExist)
                 {
                     await Context.Activity.AddAsync(activity);
@@ -163,7 +163,10 @@ namespace dotnet5_webapp.Repos
         }        
         public async Task<List<Activity>> GetLimitedActivities(int size)
         {
-            var activities = await Context.Activity.OrderByDescending(a => a.DateRecorded).Include(a => a.Player).ToListAsync(); 
+            var activities = await Context.Activity
+                .OrderByDescending(a => a.DateRecorded)
+                .Include(a => a.Player)
+                .ToListAsync(); 
             return activities
                 .Where(a => isImportantActivity(a.Title, a.Details))
                 .Take(size)

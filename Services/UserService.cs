@@ -222,11 +222,14 @@ namespace dotnet5_webapp.Services
             JArray activities = (JArray)joResponse ["activities"];
             foreach (var activity in activities)
             {
+                var dateString = activity.Value<String>("date");
+                var dateRecorded = DateTime.Parse(dateString);
                 var newActivity = new Activity()
                 {
                     Player = user,
                     UserId = user.Id,
-                    DateRecorded = activity.Value<String>("date"),
+                    DateRecorded = dateRecorded,
+                    DateRecordedStamp = dateString,
                     Title = activity.Value<String>("text"),
                     Details = activity.Value<String>("details"),
                 };
@@ -268,11 +271,14 @@ namespace dotnet5_webapp.Services
                 JArray jsonActivities = (JArray)joResponse ["activities"];
                 foreach (var activity in jsonActivities)
                 {
+                    var dateString = activity.Value<String>("date");
+                    var dateRecorded = DateTime.Parse(dateString);
                     var newActivity = new Activity()
                     {
                         Player = player,
                         UserId = player.Id,
-                        DateRecorded = activity.Value<String>("date"),
+                        DateRecorded = dateRecorded,
+                        DateRecordedStamp = dateString,
                         Title = activity.Value<String>("text"),
                         Details = activity.Value<String>("details"),
                     };
