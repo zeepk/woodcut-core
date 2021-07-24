@@ -283,6 +283,28 @@ namespace dotnet5_webapp.Controllers
             var response = await UserService.UpdateRs3Rsn(username, applicationUser);
             return Ok(response);
         } 
+        
+        [HttpPut("like/{id}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseWrapper<Activity>>> LikeActivity(int id)
+        {
+            var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+            var applicationUser = await UserService.SearchForUser(user);
+
+            var response = await UserService.LikeActivity(applicationUser, id);
+            return Ok(response);
+        }  
+        
+        [HttpPut("unlike/{id}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseWrapper<Activity>>> UnlikeActivity(int id)
+        {
+            var user = User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+            var applicationUser = await UserService.SearchForUser(user);
+
+            var response = await UserService.UnlikeActivity(applicationUser, id);
+            return Ok(response);
+        }   
 
         private bool UserExists(int id)
         {

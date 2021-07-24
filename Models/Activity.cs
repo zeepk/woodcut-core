@@ -14,5 +14,6 @@ namespace dotnet5_webapp.Models
         public string Details { get; set; }
         public string DateRecordedStamp { get; set; }
         public DateTime DateRecorded { get; set; }
+        public List<ActivityLike> Likes { get; set; }
     }
 }

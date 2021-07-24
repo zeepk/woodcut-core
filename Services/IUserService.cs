@@ -23,6 +23,8 @@ namespace dotnet5_webapp.Services
         Task<ResponseWrapper<String>> FollowPlayer(String username, ApplicationUser user);
         Task<ResponseWrapper<String>> UnfollowPlayer(String username, ApplicationUser user);
         Task<ResponseWrapper<string>> UpdateRs3Rsn(String username, ApplicationUser user);
+        Task<ResponseWrapper<Activity>> LikeActivity(ApplicationUser user, int activityId);
+        Task<ResponseWrapper<Activity>> UnlikeActivity(ApplicationUser user, int activityId);
         Task<ResponseWrapper<ICollection<String>>> GetFollowedPlayerNames(ApplicationUser user);
         Task<ResponseWrapper<ICollection<ActivityResponse>>> GetFollowedPlayerActivities(ApplicationUser user, int size);
         Task<int> CurrentPlayerCount();

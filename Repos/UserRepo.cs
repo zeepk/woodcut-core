@@ -132,7 +132,7 @@ namespace dotnet5_webapp.Repos
             var activities = await Context.Follow
                 .Where(f => f.User == user)
                 .Include(f => f.Player)
-                .Join(Context.Activity.Include(a => a.Player), f => f.Player.Id, a => a.Player.Id, 
+                .Join(Context.Activity.Include(a => a.Player).Include(a => a.Likes), f => f.Player.Id, a => a.Player.Id, 
                     (f, a) => a)
                 .OrderByDescending(a => a.DateRecorded)
                 .ToListAsync();
@@ -159,14 +159,14 @@ namespace dotnet5_webapp.Repos
         public async Task<List<Activity>> GetAllActivities()
         {
             return await Context.Activity.OrderByDescending(a => a.DateRecorded).ToListAsync();
-
         }        
         public async Task<List<Activity>> GetLimitedActivities(int size)
         {
             var activities = await Context.Activity
                 .OrderByDescending(a => a.DateRecorded)
                 .Include(a => a.Player)
-                .ToListAsync(); 
+                .Include(a => a.Likes)
+                .ToListAsync();
             return activities
                 .Where(a => isImportantActivity(a.Title, a.Details))
                 .Take(size)
@@ -208,6 +208,31 @@ namespace dotnet5_webapp.Repos
                 .Include(r => r.Minigames.OrderBy(s => s.MinigameId))
                 .FirstOrDefaultAsync();
             return record;
+        }
+        
+        public async Task<Activity> GetActivityById(int activityId){
+            return await Context.Activity.Where(a => a.Id == activityId)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Activity> LikeActivity(Activity activity, ActivityLike like){
+            await Context.ActivityLike.AddAsync(like);
+            var foundActivity = await Context.Activity
+                .Where(a => a.Id == activity.Id)
+                .Include(a => a.Likes)
+                .FirstOrDefaultAsync();
+            foundActivity.Likes.Add(like);
+            await Context.SaveChangesAsync();
+            return activity;
+        }
+        public async Task<Activity> UnlikeActivity(Activity activity, ApplicationUser user){
+            var foundActivity = await Context.Activity
+                .Where(a => a.Id == activity.Id)
+                .Include(a => a.Likes)
+                .ThenInclude(l => l.User)
+                .FirstOrDefaultAsync();
+            foundActivity.Likes = foundActivity.Likes.Where(l => l.User != user).ToList();
+            await Context.SaveChangesAsync();
+            return activity;
         }
         
         private bool isImportantActivity(string title, string details)

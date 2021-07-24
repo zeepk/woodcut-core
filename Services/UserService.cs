@@ -109,7 +109,7 @@ namespace dotnet5_webapp.Services
         public async Task<List<ActivityResponse>> GetAllActivities(int size)
         {
             var activityList = await _UserRepo.GetLimitedActivities(size);
-            var activityTasks =  activityList.Select(async a => await FormatActivity(a));
+            var activityTasks =  activityList.Select(async a => await FormatActivity(a, null));
             var activityResponses = await Task.WhenAll(activityTasks);
             return activityResponses.ToList();
         }
@@ -238,7 +238,7 @@ namespace dotnet5_webapp.Services
 
             var addedActivities = await _UserRepo.CreateActivities(activityList);
 
-            var activityTasks =  activityList.Select(async a => await FormatActivity(a));
+            var activityTasks =  activityList.Select(async a => await FormatActivity(a, null));
             var activityResponses = await Task.WhenAll(activityTasks);
             data.Activities = activityResponses.ToList();
             }
@@ -622,7 +622,7 @@ namespace dotnet5_webapp.Services
             };
             
             var activities = await _UserRepo.GetFollowedPlayerActivities(user, size);
-            var activityTasks =  activities.Select(async a => await FormatActivity(a));
+            var activityTasks =  activities.Select(async a => await FormatActivity(a, user));
             var activityResponses = await Task.WhenAll(activityTasks);
             response.Data = activityResponses.ToList();
             return response;
@@ -658,6 +658,68 @@ namespace dotnet5_webapp.Services
             }
 
             return response;
+        }         
+        public async Task<ResponseWrapper<Activity>> LikeActivity(ApplicationUser user, int activityId)
+        {
+            var response = new ResponseWrapper<Activity>
+            {
+                Success = true,
+                Status = "",
+            };
+            
+            var activity = await _UserRepo.GetActivityById(activityId);
+            if (activity == null)
+            {
+                response.Success = false;
+                response.Status = "Activity does not exist with id.";
+                return response;
+            }
+
+            var activityLike = new ActivityLike()
+            {
+                Activity = activity,
+                User = user
+            };
+
+            var updatedActivity = await _UserRepo.LikeActivity(activity, activityLike);
+            if (updatedActivity == null)
+            {
+                response.Success = false;
+                response.Status = "Like activity action failed.";
+                return response;
+            }
+
+            response.Data = updatedActivity;
+
+            return response;
+        }         
+        public async Task<ResponseWrapper<Activity>> UnlikeActivity(ApplicationUser user, int activityId)
+        {
+            var response = new ResponseWrapper<Activity>
+            {
+                Success = true,
+                Status = "",
+            };
+            
+            var activity = await _UserRepo.GetActivityById(activityId);
+            if (activity == null)
+            {
+                response.Success = false;
+                response.Status = "Activity does not exist with id.";
+                return response;
+            }
+
+            var updatedActivity = await _UserRepo.UnlikeActivity(activity, user);
+            if (updatedActivity == null)
+            {
+                response.Success = false;
+                response.Status = "Unlike activity action failed.";
+                return response;
+            }
+
+            response.Data = updatedActivity;
+
+            return response;
         } 
         public async Task<ResponseWrapper<String>> UnfollowPlayer(String username, ApplicationUser user)
         {
@@ -683,7 +745,7 @@ namespace dotnet5_webapp.Services
                 response.Status = "Follow action failed.";
                 return response;
             }
-
+            
             return response;
         }        
         public async Task<ResponseWrapper<string>> UpdateRs3Rsn(String username, ApplicationUser user)
@@ -715,7 +777,7 @@ namespace dotnet5_webapp.Services
             return response;
         }
 
-        public async Task<ActivityResponse> FormatActivity(Activity activity)
+        public async Task<ActivityResponse> FormatActivity(Activity activity, ApplicationUser? user)
         {
             var response = new ActivityResponse();
             response.UserId = activity.UserId;
@@ -724,6 +786,15 @@ namespace dotnet5_webapp.Services
             response.Title = activity.Title;
             response.Details = activity.Details;
             response.DateRecorded = activity.DateRecorded;
+
+            if (activity.Likes != null)
+            {
+                response.Likes = activity.Likes.Count;
+                if (user != null)
+                {
+                    response.CurrentUserLiked = activity.Likes.Any(l => l.User == user);
+                }
+            }
 
             if (activity.Title.Contains("Levelled up "))
             {

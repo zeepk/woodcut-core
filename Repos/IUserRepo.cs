@@ -29,5 +29,8 @@ namespace dotnet5_webapp.Repos
         Task<StatRecord> GetWeekRecord(int userId);
         Task<StatRecord> GetMonthRecord(int userId);
         Task<StatRecord> GetYearRecord(int userId);
+        Task<Activity> GetActivityById(int activityId);
+        Task<Activity> LikeActivity(Activity activity, ActivityLike like);
+        Task<Activity> UnlikeActivity(Activity activity, ApplicationUser user);
     }
 }

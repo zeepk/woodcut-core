@@ -257,6 +257,28 @@ namespace dotnet5_webapp.Migrations
                     b.ToTable("Activity");
                 });
 
+            modelBuilder.Entity("dotnet5_webapp.Models.ActivityLike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int?>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityLike");
+                });
+
             modelBuilder.Entity("dotnet5_webapp.Models.Follow", b =>
                 {
                     b.Property<int>("Id")
@@ -454,6 +476,21 @@ namespace dotnet5_webapp.Migrations
                     b.Navigation("Player");
                 });
 
+            modelBuilder.Entity("dotnet5_webapp.Models.ActivityLike", b =>
+                {
+                    b.HasOne("dotnet5_webapp.Models.Activity", "Activity")
+                        .WithMany("Likes")
+                        .HasForeignKey("ActivityId");
+
+                    b.HasOne("dotnet5_webapp.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("dotnet5_webapp.Models.Follow", b =>
                 {
                     b.HasOne("dotnet5_webapp.Models.Player", "Player")
@@ -490,6 +527,11 @@ namespace dotnet5_webapp.Migrations
                         .HasForeignKey("PlayerId");
 
                     b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("dotnet5_webapp.Models.Activity", b =>
+                {
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("dotnet5_webapp.Models.Player", b =>
