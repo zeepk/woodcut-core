@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using dotnet5_webapp.Internal;
 using dotnet5_webapp.Models;
 
 namespace dotnet5_webapp.Repos
@@ -11,6 +12,7 @@ namespace dotnet5_webapp.Repos
         Task<Player> GetPlayerByUsername(string username);
         Task<ApplicationUser> GetUserByUsername(string username);
         Task<Player> GetShallowUserByUsername(string username);
+        Task<Player> UpdatePlayerIronStatus(Player player, AccountType accountType);
         Task<Player> AddStatRecordToUser(StatRecord statRecord);
         Task<Player> CreateUser(Player player);
         Task<List<Activity>> CreateActivities(List<Activity> activities);
@@ -29,6 +31,7 @@ namespace dotnet5_webapp.Repos
         Task<StatRecord> GetWeekRecord(int userId);
         Task<StatRecord> GetMonthRecord(int userId);
         Task<StatRecord> GetYearRecord(int userId);
+        Task<(StatRecord, StatRecord)> GetDxpRecords(int userId, DateTime startDate, DateTime endDate);
         Task<Activity> GetActivityById(int activityId);
         Task<Activity> LikeActivity(Activity activity, ActivityLike like);
         Task<Activity> UnlikeActivity(Activity activity, ApplicationUser user);

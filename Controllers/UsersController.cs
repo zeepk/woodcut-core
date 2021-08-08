@@ -305,6 +305,19 @@ namespace dotnet5_webapp.Controllers
             var response = await UserService.UnlikeActivity(applicationUser, id);
             return Ok(response);
         }   
+        
+        [HttpPut("ironstatus/{username}")]
+        public async Task<ActionResult<ResponseWrapper<Player>>> UpdateAccountStatus(string username)
+        {
+            var response = await UserService.UpdateIronStatus(username);
+            return Ok(response);
+        }           
+        [HttpGet("ironstatus/{username}")]
+        public async Task<ActionResult<ResponseWrapper<AccountType>>> GetIronStatus(String username)
+        {
+            var response = await UserService.GetIronStatus(username);
+            return Ok(response);
+        }   
 
         private bool UserExists(int id)
         {

@@ -6,8 +6,13 @@ namespace dotnet5_webapp.Utils
 {
     public class Constants
     {
+        public const bool dxpEnabled = true;
+        public const string dxpStartDateString = "2021/08/06";
+        public const string dxpEndDateString = "2021/08/16";
 
         public const string RunescapeApiBaseUrl = "https://secure.runescape.com/m=hiscore/index_lite.ws?player=";
+        public const string RunescapeImApiBaseUrl = "https://secure.runescape.com/m=hiscore_ironman/index_lite.ws?player=";
+        public const string RunescapeHcimApiBaseUrl = "https://secure.runescape.com/m=hiscore_hardcore_ironman/index_lite.ws?player=";
         public const string RunescapeApiPlayerDetailsUrlPre = "https://secure.runescape.com/m=website-data/playerDetails.ws?names=%5B%22";
         public const string RunescapeApiPlayerDetailsUrlPost = "%22%5D&callback=jQuery000000000000000_0000000000&_=0";
         public const string RunescapeApiPlayerMetricsUrlPre = "https://apps.runescape.com/runemetrics/profile/profile?user=";

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using dotnet5_webapp.Data;
+using dotnet5_webapp.Internal;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -60,7 +61,13 @@ namespace dotnet5_webapp.Repos
             await Context.User.AddAsync(player);
             await Context.SaveChangesAsync();
             return player;
-        }            
+        }   
+        public async Task<Player> UpdatePlayerIronStatus(Player player, AccountType accountType)
+        {
+            player.IronmanStatus = accountType;
+            await Context.SaveChangesAsync();
+            return player;
+        }    
         public async Task<List<Activity>> CreateActivities(List<Activity> activities)
         {
             var updatedActivities = new List<Activity>();
@@ -209,6 +216,20 @@ namespace dotnet5_webapp.Repos
                 .FirstOrDefaultAsync();
             return record;
         }
+        public async Task<(StatRecord, StatRecord)> GetDxpRecords(int userId, DateTime startDate, DateTime endDate)
+        {
+            var startRecord = await Context.StatRecord.Where(r => r.UserId == userId && r.DateCreated >= startDate)
+                .OrderBy(r => r.DateCreated)
+                .Include(r => r.Skills.OrderBy(s => s.SkillId))
+                .Include(r => r.Minigames.OrderBy(s => s.MinigameId))
+                .FirstOrDefaultAsync();            
+            var endRecord = await Context.StatRecord.Where(r => r.UserId == userId && r.DateCreated >= endDate)
+                .OrderBy(r => r.DateCreated)
+                .Include(r => r.Skills.OrderBy(s => s.SkillId))
+                .Include(r => r.Minigames.OrderBy(s => s.MinigameId))
+                .FirstOrDefaultAsync();
+            return (startRecord, endRecord);
+        }    
         
         public async Task<Activity> GetActivityById(int activityId){
             return await Context.Activity.Where(a => a.Id == activityId)
@@ -267,7 +288,9 @@ namespace dotnet5_webapp.Repos
                 details.Contains("Citadel") || 
                 details.Contains("treasure trail.") || 
                 details.Contains("mystery") || 
+                title.Contains("Quest complete") || 
                 details.Contains("Mystery") || 
+                title.Contains("songs unlocked") || 
                 details.Contains("Fealty")
             )
             {

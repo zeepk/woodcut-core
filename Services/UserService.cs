@@ -16,9 +16,11 @@ namespace dotnet5_webapp.Services
     public class UserService : IUserService
     {
         private readonly IUserRepo _UserRepo;
-        static string _address = Constants.RunescapeApiBaseUrl;
-        static string _playerCountAddress = Constants.RunescapeApiPlayerCount;
-        static int _totalSkills = Constants.TotalSkills + 1;
+        static string hiscoreUrl = Constants.RunescapeApiBaseUrl;
+        static string imHiscoreUrl = Constants.RunescapeImApiBaseUrl;
+        static string hcimHiscoreUrl = Constants.RunescapeHcimApiBaseUrl;
+        static string playerCountUrl = Constants.RunescapeApiPlayerCount;
+        static int totalSkills = Constants.TotalSkills + 1;
 
         public UserService(IUserRepo userRepo)
         {
@@ -47,14 +49,14 @@ namespace dotnet5_webapp.Services
         {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            var apiData = await OfficialApiCall(_address + username);
+            var apiData = await OfficialApiCall(hiscoreUrl + username);
             if (apiData == null)
             {
                 return (null, null);
             }
             string[] lines = apiData.Split('\n');
             // looping through the skills and adding them
-            for (int i = 0; i < _totalSkills; i++)
+            for (int i = 0; i < totalSkills; i++)
             {
                 String[] stat = lines[i].Split(',');
                 Skill skill = new Skill()
@@ -73,7 +75,7 @@ namespace dotnet5_webapp.Services
             }
 
             // looping through the minigames and adding them
-            for (int i = _totalSkills; i < lines.Length - 1; i++)
+            for (int i = totalSkills; i < lines.Length - 1; i++)
             {
                 String[] stat = lines[i].Split(',');
                 Minigame minigame = new Minigame()
@@ -96,7 +98,7 @@ namespace dotnet5_webapp.Services
         public async Task<int> CurrentPlayerCount()
         {
             int result;
-            var outputString = await OfficialApiCall(_playerCountAddress);
+            var outputString = await OfficialApiCall(playerCountUrl);
             outputString = outputString.Split('(', ')')[1];
             bool isParsable = Int32.TryParse(outputString, out result);
             if (!isParsable)
@@ -142,6 +144,45 @@ namespace dotnet5_webapp.Services
                 Success = true,
                 Data = data
             };
+        }            
+        public async Task<ResponseWrapper<Player>> UpdateIronStatus(String username)
+        {
+            var response = new ResponseWrapper<Player>
+            {
+                Success = true,
+                Data = null
+            };
+            
+            var player = await _UserRepo.GetPlayerByUsername(username);
+            if (player == null)
+            {
+                response.Status = $"User {username} not found in the Official API details table";
+                return response;
+            }
+            
+            var accountStatus = await GetAccountStatus(username);
+            player = await _UserRepo.UpdatePlayerIronStatus(player, accountStatus);
+            
+            response.Data = player;
+            return response;
+        }          
+        public async Task<ResponseWrapper<AccountType>> GetIronStatus(String username)
+        {
+            var response = new ResponseWrapper<AccountType>
+            {
+                Success = true,
+                Data = AccountType.Main
+            };
+            
+            var player = await _UserRepo.GetPlayerByUsername(username);
+            if (player == null)
+            {
+                response.Status = $"User {username} not found.";
+                return response;
+            }
+
+            response.Data = player.IronmanStatus;
+            return response;
         }         
         public async Task<ResponseWrapper<PlayerQuestsServiceResponse>> GetPlayerQuests(String username)
         {
@@ -296,7 +337,7 @@ namespace dotnet5_webapp.Services
         {
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            var apiData = await OfficialApiCall(_address + player.Username);
+            var apiData = await OfficialApiCall(hiscoreUrl + player.Username);
             if (apiData == null)
             {
                 return;
@@ -312,7 +353,7 @@ namespace dotnet5_webapp.Services
             };
 
             // looping through the skills and adding them
-            for (var i = 0; i < _totalSkills; i++)
+            for (var i = 0; i < totalSkills; i++)
             {
                 String[] stat = lines[i].Split(',');
                 Skill skill = new Skill()
@@ -329,7 +370,7 @@ namespace dotnet5_webapp.Services
             }
 
             // looping through the minigames and adding them
-            for (var i = _totalSkills; i < lines.Length - 1; i++)
+            for (var i = totalSkills; i < lines.Length - 1; i++)
             {
                 String[] stat = lines[i].Split(',');
                 Minigame minigame = new Minigame()
@@ -421,6 +462,10 @@ namespace dotnet5_webapp.Services
                 Console.WriteLine($"Error adding initial stat record to new user with username {username}");
                 return null;
             }
+
+            var accountType = await GetAccountStatus(username);
+
+            newPlayer.IronmanStatus = accountType;
             
             var user = await _UserRepo.CreateUser(newPlayer);
             return user;
@@ -487,15 +532,21 @@ namespace dotnet5_webapp.Services
                 response.Success = false;
                 return response;
             }
+            
+            // establish dxp start and end
+            var dxpStartDate = DateTime.Parse(Constants.dxpStartDateString);
+            var dxpEndDate = DateTime.Parse(Constants.dxpEndDateString);
+            var isDxpOver = DateTime.Today > dxpEndDate;
 
             // get records for yesterday, sunday, month start, and year start
             var dayRecord = await _UserRepo.GetYesterdayRecord(user.Id);
             var weekRecord = await _UserRepo.GetWeekRecord(user.Id);
             var monthRecord = await _UserRepo.GetMonthRecord(user.Id);
             var yearRecord = await _UserRepo.GetYearRecord(user.Id);
+            var (dxpStartRecord, dxpEndRecord) = await _UserRepo.GetDxpRecords(user.Id, dxpStartDate, dxpEndDate);
 
             // calculate gainz
-            for (var i = 0; i < _totalSkills; i++)
+            for (var i = 0; i < totalSkills; i++)
             {
                 var skillGain = new SkillGain();
                 
@@ -513,19 +564,25 @@ namespace dotnet5_webapp.Services
                     var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var dxpStartSkill = dxpStartRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var dxpEndSkill = dxpStartRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
 
-                    if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0)
+                    if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0 || dxpStartSkill.Xp < 0 || dxpEndSkill.Xp < 0)
                     {
                         daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
                         weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
                         monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
                         yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
+                        dxpStartSkill.Xp = dxpStartSkill.Xp < 0 ? 0 : dxpStartSkill.Xp;
+                        dxpEndSkill.Xp = dxpEndSkill.Xp < 0 ? 0 : dxpEndSkill.Xp;
                     }
 
                     skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
+                    skillGain.LevelGain = currentSkill.Level - daySkill.Level;
                     skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
                     skillGain.MonthGain = currentSkill.Xp - monthSkill.Xp;
                     skillGain.YearGain = currentSkill.Xp - yearSkill.Xp;
+                    skillGain.DxpGain = (isDxpOver ? dxpEndSkill.Xp : currentSkill.Xp) - dxpStartSkill.Xp;
                 }
                 skillGains.Add(skillGain);
             }
@@ -777,6 +834,38 @@ namespace dotnet5_webapp.Services
             return response;
         }
 
+        public async Task<AccountType> GetAccountStatus(String username)
+        {
+            try
+            {
+                var hcimData = await OfficialApiCall(hcimHiscoreUrl + username);
+                var imData = await OfficialApiCall(imHiscoreUrl + username);
+                
+                if (imData == null)
+                {
+                    // if iron data null, means they are main since they would otherwise have hiscore data
+                    return AccountType.Main;
+                }
+                if (hcimData == null)
+                {
+                    // if iron data not null, but hcim null, must be regular iron
+                    return AccountType.Ironman;
+                }
+
+                var imTotalXp = imData.Split('\n').First().Split(',').LastOrDefault();
+                var hcimTotalXp = hcimData.Split('\n').First().Split(',').LastOrDefault();
+                var hcimAndImHiscoresEqual = imTotalXp == hcimTotalXp;
+
+                // if total xp is the same on im and hcim, must be hcim, otherwise dead hcim
+                return hcimAndImHiscoresEqual ? AccountType.HardcoreIronman : AccountType.DeadHardcoreIronman;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return AccountType.Main;
+            }
+        }
+        
         public async Task<ActivityResponse> FormatActivity(Activity activity, ApplicationUser? user)
         {
             var response = new ActivityResponse();
