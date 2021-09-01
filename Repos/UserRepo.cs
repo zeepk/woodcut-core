@@ -183,6 +183,15 @@ namespace dotnet5_webapp.Repos
         {
             var record = await Context.StatRecord.Where(r => r.UserId == userId).OrderByDescending(r => r.DateCreated).FirstOrDefaultAsync();
             return record;
+        }            
+        public async Task<StatRecord> GetTwoDaysAgoRecord(int userId)
+        {
+            var record = await Context.StatRecord
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.DateCreated)
+                .Skip(1)
+                .FirstOrDefaultAsync();
+            return record;
         }        
         public async Task<StatRecord> GetWeekRecord(int userId)
         {

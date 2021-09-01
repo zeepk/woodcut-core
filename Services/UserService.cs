@@ -540,6 +540,7 @@ namespace dotnet5_webapp.Services
 
             // get records for yesterday, sunday, month start, and year start
             var dayRecord = await _UserRepo.GetYesterdayRecord(user.Id);
+            var yesterdayRecord = await _UserRepo.GetTwoDaysAgoRecord(user.Id);
             var weekRecord = await _UserRepo.GetWeekRecord(user.Id);
             var monthRecord = await _UserRepo.GetMonthRecord(user.Id);
             var yearRecord = await _UserRepo.GetYearRecord(user.Id);
@@ -561,15 +562,17 @@ namespace dotnet5_webapp.Services
                 if (user.IsTracking)
                 {
                     var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    var yesterdaySkill = yesterdayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var dxpStartSkill = dxpStartRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var dxpEndSkill = dxpStartRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
 
-                    if (daySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0 || dxpStartSkill.Xp < 0 || dxpEndSkill.Xp < 0)
+                    if (daySkill.Xp < 0 || yesterdaySkill.Xp < 0 || weekSkill.Xp < 0 || monthSkill.Xp < 0 || yearSkill.Xp < 0 || dxpStartSkill.Xp < 0 || dxpEndSkill.Xp < 0)
                     {
                         daySkill.Xp = daySkill.Xp < 0 ? 0 : daySkill.Xp;
+                        yesterdaySkill.Xp = yesterdaySkill.Xp < 0 ? 0 : yesterdaySkill.Xp;
                         weekSkill.Xp = weekSkill.Xp < 0 ? 0 : weekSkill.Xp;
                         monthSkill.Xp = monthSkill.Xp < 0 ? 0 : monthSkill.Xp;
                         yearSkill.Xp = yearSkill.Xp < 0 ? 0 : yearSkill.Xp;
@@ -578,6 +581,8 @@ namespace dotnet5_webapp.Services
                     }
 
                     skillGain.DayGain = currentSkill.Xp - daySkill.Xp;
+                    // we use yesterday's stats minus two days ago's stats to get total xp gain of yesterday's skilling
+                    skillGain.YesterdayGain = daySkill.Xp - yesterdaySkill.Xp;
                     skillGain.LevelGain = currentSkill.Level - daySkill.Level;
                     skillGain.WeekGain = currentSkill.Xp - weekSkill.Xp;
                     skillGain.MonthGain = currentSkill.Xp - monthSkill.Xp;
