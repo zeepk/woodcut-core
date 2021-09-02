@@ -563,7 +563,15 @@ namespace dotnet5_webapp.Services
                 {
                     var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var yesterdaySkill = yesterdayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    if (weekRecord == null)
+                    {
+                        weekRecord = dayRecord;
+                    }
                     var weekSkill = weekRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
+                    if (monthRecord == null)
+                    {
+                        monthRecord = dayRecord;
+                    }                    
                     var monthSkill = monthRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var yearSkill = yearRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var dxpStartSkill = dxpStartRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
