@@ -78,7 +78,6 @@ namespace dotnet5_webapp
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddCors();
-            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,7 +88,6 @@ namespace dotnet5_webapp
                 .AllowAnyMethod()
                 .AllowAnyHeader());   
 
-            app.UseMvc();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
