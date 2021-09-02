@@ -77,18 +77,19 @@ namespace dotnet5_webapp
             });
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepo, UserRepo>();
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-   {
-       builder.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-   }));
+            services.AddCors();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors("MyPolicy");
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());   
+
+            app.UseMvc();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
