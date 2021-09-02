@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace dotnet5_webapp.Controllers
 {
+    [EnableCors("MyPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
