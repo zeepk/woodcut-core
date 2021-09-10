@@ -297,6 +297,8 @@ namespace dotnet5_webapp.Repos
                 details.Contains("Citadel") || 
                 details.Contains("treasure trail.") || 
                 details.Contains("mystery") || 
+                title.Contains("I found something") || 
+                details.Contains("defeated the") || 
                 title.Contains("Quest complete") || 
                 title.Contains("archaeological mystery") || 
                 title.Contains("songs unlocked") || 
