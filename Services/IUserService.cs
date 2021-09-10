@@ -14,6 +14,7 @@ namespace dotnet5_webapp.Services
         Task<List<Activity>> AddNewActivitiesForAllUsers();
         Task<Player> CreateNewUser(String username);
         Task<UserSearchResponse> SearchForPlayer(String username);
+        Task<ResponseWrapper<(string, string)>> CurrentVos();
         Task<ResponseWrapper<Player>> UpdateIronStatus(String username);
         Task<ResponseWrapper<AccountType>> GetIronStatus(String username);
         Task<ApplicationUser> SearchForUser(String username);

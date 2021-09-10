@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using dotnet5_webapp.Internal;
@@ -10,11 +11,13 @@ using dotnet5_webapp.Repos;
 using dotnet5_webapp.Utils;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace dotnet5_webapp.Services
 {
     public class UserService : IUserService
     {
+        private readonly IConfiguration Configuration;
         private readonly IUserRepo _UserRepo;
         static string hiscoreUrl = Constants.RunescapeApiBaseUrl;
         static string imHiscoreUrl = Constants.RunescapeImApiBaseUrl;
@@ -22,9 +25,10 @@ namespace dotnet5_webapp.Services
         static string playerCountUrl = Constants.RunescapeApiPlayerCount;
         static int totalSkills = Constants.TotalSkills + 1;
 
-        public UserService(IUserRepo userRepo)
+        public UserService(IUserRepo userRepo, IConfiguration configuration)
         {
             _UserRepo = userRepo;
+            Configuration = configuration;
         }
 
         private async Task<String> OfficialApiCall(String url)
@@ -43,7 +47,43 @@ namespace dotnet5_webapp.Services
             }
             var result = await response.Content.ReadAsStringAsync();
             return result;
-        }                
+        }       
+        
+        public async Task<ResponseWrapper<(string, string)>> CurrentVos()
+        {
+            var twitterApiKey = Configuration["TwitterApiKey"];
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", twitterApiKey);
+            var reqResp = new HttpResponseMessage();
+            reqResp = await client.GetAsync("https://api.twitter.com/2/users/3429940841/tweets?max_results=5");
+            
+            var response = new ResponseWrapper<(string, string)>()
+            {
+                    Success = false,
+            };
+
+            try
+            {
+                response.Status = "VoS request failed";
+                reqResp.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            var result = await reqResp.Content.ReadAsStringAsync();
+            var innerString = result.Split("The Voice of Seren is now active in the ")
+                .Last()
+                .Split(" districts")
+                .First()
+                .Split(" and ");
+            response.Data = (innerString.First(), innerString.Last());
+            response.Status = "Success";
+            response.Success = true;
+            
+            return response;
+        }         
         
         private async Task<(ICollection<Skill>, ICollection<Minigame>)> GetCurrentStats(String username)
         {

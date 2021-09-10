@@ -165,6 +165,15 @@ namespace dotnet5_webapp.Controllers
             return Ok(response);
         }    
         
+        // GET: api/Users/vos
+        // get current vos (voice of seren)
+        [HttpGet("vos")]
+        public async Task<ActionResult<ResponseWrapper<(string, string)>>> CurrentVos()
+        {
+            var vos = await UserService.CurrentVos();
+            return Ok(vos);
+        }
+        
         // GET: api/Users/gains/zee+pk
         // returns specific user and their records
         [HttpGet("gains/{username}")]

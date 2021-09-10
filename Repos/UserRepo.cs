@@ -300,6 +300,8 @@ namespace dotnet5_webapp.Repos
                 title.Contains("Quest complete") || 
                 title.Contains("archaeological mystery") || 
                 title.Contains("songs unlocked") || 
+                title.Contains("I killed") || 
+                title.Contains("ancient effigy") || 
                 details.Contains("Fealty")
             )
             {
