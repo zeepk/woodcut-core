@@ -2,11 +2,12 @@
 
 namespace dotnet5_webapp.Models.DTO.Requests
 {
-    public class UserLoginRequest
+    public class ResetPasswordRequest
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+        public string Email { get; set; }
+        public string Token { get; set; }
     }
 }

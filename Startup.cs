@@ -22,6 +22,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 namespace dotnet5_webapp
 {
