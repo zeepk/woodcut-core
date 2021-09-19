@@ -265,8 +265,8 @@ namespace dotnet5_webapp.Controllers
             {
                 var emailConfigOptions = Configuration.GetSection("EmailConfiguration");
                 var fromEmail = emailConfigOptions.GetSection("From").Value;
-                var username = emailConfigOptions.GetSection("Username").Value;
-                var password = emailConfigOptions.GetSection("Password").Value;
+                var username = emailConfigOptions.GetSection("EmailUsername").Value;
+                var password = emailConfigOptions.GetSection("EmailPassword").Value;
                 var host = emailConfigOptions.GetSection("SmtpServer").Value;
                 var port = emailConfigOptions.GetSection("Port").Value;
             
