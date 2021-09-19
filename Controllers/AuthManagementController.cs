@@ -226,7 +226,7 @@ namespace dotnet5_webapp.Controllers
                 });
             }
             
-            var result = await _passwordValidator.ValidateAsync(_userManager, null, resetPasswordModel.Password);
+            var result = await _passwordValidator.ValidateAsync(_userManager, user, resetPasswordModel.Password);
             if (!result.Succeeded)
             {
                 return Ok(new RegistrationResponse()
