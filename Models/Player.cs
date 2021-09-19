@@ -12,6 +12,8 @@ namespace dotnet5_webapp.Models
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public DateTime DateCreated { get; set; }
+        public DateTime LastChecked { get; set; }
+        public string RecentStats { get; set; }
         public List<StatRecord> StatRecords { get; set; }
         public bool IsTracking { get; set; }
         public AccountType IronmanStatus { get; set; }

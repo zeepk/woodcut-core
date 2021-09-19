@@ -36,5 +36,7 @@ namespace dotnet5_webapp.Repos
         Task<Activity> GetActivityById(int activityId);
         Task<Activity> LikeActivity(Activity activity, ActivityLike like);
         Task<Activity> UnlikeActivity(Activity activity, ApplicationUser user);
+        Task<Player> UpdatePlayerLastChecked(Player player, string recentStats);
+
     }
 }

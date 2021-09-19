@@ -346,6 +346,12 @@ namespace dotnet5_webapp.Migrations
                     b.Property<bool>("IsTracking")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("LastChecked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecentStats")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 

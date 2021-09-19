@@ -55,6 +55,13 @@ namespace dotnet5_webapp.Repos
             user.StatRecords.Add(statRecord);
             await Context.SaveChangesAsync();
             return user;
+        }            
+        public async Task<Player> UpdatePlayerLastChecked(Player player, string recentStats)
+        {
+            player.RecentStats = recentStats;
+            player.LastChecked = DateTime.Now;
+            await Context.SaveChangesAsync();
+            return player;
         }               
         public async Task<Player> CreateUser(Player player)
         {

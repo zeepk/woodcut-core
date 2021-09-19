@@ -85,11 +85,22 @@ namespace dotnet5_webapp.Services
             return response;
         }         
         
-        private async Task<(ICollection<Skill>, ICollection<Minigame>)> GetCurrentStats(String username)
+        private async Task<(ICollection<Skill>, ICollection<Minigame>)> GetCurrentStats(Player user)
         {
+            var apiData = String.Empty;
+            if ((DateTime.Now - user.LastChecked).TotalSeconds > 60)
+            {
+                Console.WriteLine("Making official API call");
+                apiData = await OfficialApiCall(hiscoreUrl + user.Username);
+                user = await _UserRepo.UpdatePlayerLastChecked(user, apiData);
+            }
+            else
+            {
+                apiData = user.RecentStats;
+            }
+            
             List<Skill> skills = new List<Skill>();
             List<Minigame> minigames = new List<Minigame>();
-            var apiData = await OfficialApiCall(hiscoreUrl + username);
             if (apiData == null)
             {
                 return (null, null);
@@ -564,7 +575,7 @@ namespace dotnet5_webapp.Services
             var badges = new List<Constants.BadgeType>();
             
             // get current stats to show and compare to records
-            var (currentSkills, currentMinigames) = await GetCurrentStats(username);
+            var (currentSkills, currentMinigames) = await GetCurrentStats(user);
 
             if (currentMinigames == null || currentSkills == null)
             {
