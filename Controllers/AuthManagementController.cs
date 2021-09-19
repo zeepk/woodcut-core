@@ -242,7 +242,13 @@ namespace dotnet5_webapp.Controllers
                 {
                     ModelState.TryAddModelError(error.Code, error.Description);
                 }
+                return Ok(new RegistrationResponse()
+                {
+                    Errors = result.Errors.Select(e => e.Description).ToList(),
+                    Success = false
+                });
             }
+
             return Ok();
         }        
         
@@ -317,7 +323,7 @@ namespace dotnet5_webapp.Controllers
                    new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(3),
+                Expires = DateTime.UtcNow.AddDays(300),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
