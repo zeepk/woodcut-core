@@ -597,6 +597,8 @@ namespace dotnet5_webapp.Services
             var yearRecord = await _UserRepo.GetYearRecord(user.Id);
             var (dxpStartRecord, dxpEndRecord) = await _UserRepo.GetDxpRecords(user.Id, dxpStartDate, dxpEndDate);
 
+            var validTracking = user.IsTracking && dayRecord != null;
+
             // calculate gainz
             for (var i = 0; i < totalSkills; i++)
             {
@@ -610,7 +612,7 @@ namespace dotnet5_webapp.Services
                 skillGain.Level = currentSkill.Level;
                 skillGain.Rank = currentSkill.Rank;
 
-                if (user.IsTracking)
+                if (validTracking)
                 {
                     var daySkill = dayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
                     var yesterdaySkill = yesterdayRecord.Skills.Where(s => s.SkillId == currentSkill.SkillId).FirstOrDefault();
@@ -660,7 +662,7 @@ namespace dotnet5_webapp.Services
                 minigameGain.Score = currentMinigame.Score;
                 minigameGain.Rank = currentMinigame.Rank;
 
-                if (user.IsTracking)
+                if (validTracking)
                 {
                     var dayMinigame = dayRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
                     var weekMinigame = weekRecord.Minigames.Where(s => s.MinigameId == currentMinigame.MinigameId).FirstOrDefault();
