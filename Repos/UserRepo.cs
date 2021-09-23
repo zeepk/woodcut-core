@@ -25,9 +25,16 @@ namespace dotnet5_webapp.Repos
                 .ThenInclude(r => r.Skills.OrderBy(s => s.SkillId))
                 .Include(u => u.StatRecords)
                 .ThenInclude(r => r.Minigames.OrderBy(s => s.MinigameId))
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
             return user;
-        }         
+        }    
+        public async Task<Player> GetPlayerByUsernameLite(string username)
+        {
+            var user = await Context.User.Where(u => u.Username == username)
+                .FirstOrDefaultAsync();
+            return user;
+        }  
         public async Task<Player> GetPlayerById(int id)
         {
             var user = await Context.User.Where(u => u.Id == id)
@@ -188,13 +195,19 @@ namespace dotnet5_webapp.Repos
         }
         public async Task<StatRecord> GetYesterdayRecord(int userId)
         {
-            var record = await Context.StatRecord.Where(r => r.UserId == userId).OrderByDescending(r => r.DateCreated).FirstOrDefaultAsync();
+            var record = await Context.StatRecord.Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.DateCreated)
+                .Include(r => r.Skills)
+                .Include(r => r.Minigames)                
+                .FirstOrDefaultAsync();
             return record;
         }            
         public async Task<StatRecord> GetTwoDaysAgoRecord(int userId)
         {
             var record = await Context.StatRecord
                 .Where(r => r.UserId == userId)
+                .Include(r => r.Skills)
+                .Include(r => r.Minigames)
                 .OrderByDescending(r => r.DateCreated)
                 .Skip(1)
                 .FirstOrDefaultAsync();
@@ -312,6 +325,9 @@ namespace dotnet5_webapp.Repos
                 title.Contains("I killed") || 
                 title.Contains("Dungeon floor") || 
                 title.Contains("ancient effigy") || 
+                title.Contains("artefacts") || 
+                title.Contains("max cape") || 
+                title.Contains("Forcae") || 
                 details.Contains("Fealty")
             )
             {

@@ -10,6 +10,7 @@ namespace dotnet5_webapp.Repos
     public interface IUserRepo
     {
         Task<Player> GetPlayerByUsername(string username);
+        Task<Player> GetPlayerByUsernameLite(string username);
         Task<ApplicationUser> GetUserByUsername(string username);
         Task<Player> GetShallowUserByUsername(string username);
         Task<Player> UpdatePlayerIronStatus(Player player, AccountType accountType);

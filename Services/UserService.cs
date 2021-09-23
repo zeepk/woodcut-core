@@ -92,6 +92,7 @@ namespace dotnet5_webapp.Services
             {
                 Console.WriteLine("Making official API call");
                 apiData = await OfficialApiCall(hiscoreUrl + user.Username);
+                Console.WriteLine("Done making official API call");
                 user = await _UserRepo.UpdatePlayerLastChecked(user, apiData);
             }
             else
@@ -204,7 +205,7 @@ namespace dotnet5_webapp.Services
                 Data = null
             };
             
-            var player = await _UserRepo.GetPlayerByUsername(username);
+            var player = await _UserRepo.GetPlayerByUsernameLite(username);
             if (player == null)
             {
                 response.Status = $"User {username} not found in the Official API details table";
@@ -225,7 +226,7 @@ namespace dotnet5_webapp.Services
                 Data = AccountType.Main
             };
             
-            var player = await _UserRepo.GetPlayerByUsername(username);
+            var player = await _UserRepo.GetPlayerByUsernameLite(username);
             if (player == null)
             {
                 response.Status = $"User {username} not found.";
@@ -530,7 +531,7 @@ namespace dotnet5_webapp.Services
                 Status = ""
             };
             
-            var user = await _UserRepo.GetPlayerByUsername(username);
+            var user = await _UserRepo.GetPlayerByUsernameLite(username);
             if (user == null)
             {
                 response.Success = false;
@@ -552,7 +553,7 @@ namespace dotnet5_webapp.Services
                 Data = new CurrentGainForUserServiceResponse()
             };
             
-            var user = await _UserRepo.GetPlayerByUsername(username);
+            var user = await _UserRepo.GetPlayerByUsernameLite(username);
             if (user == null)
             {
                 // create use if does not exist
