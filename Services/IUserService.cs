@@ -29,6 +29,7 @@ namespace dotnet5_webapp.Services
         Task<ResponseWrapper<Activity>> LikeActivity(ApplicationUser user, int activityId);
         Task<ResponseWrapper<Activity>> UnlikeActivity(ApplicationUser user, int activityId);
         Task<ResponseWrapper<ICollection<String>>> GetFollowedPlayerNames(ApplicationUser user);
+        Task<ResponseWrapper<ICollection<String>>> SeedPlayersFromClanMemberList(String clanName);
         Task<ResponseWrapper<ICollection<ActivityResponse>>> GetFollowedPlayerActivities(ApplicationUser user, int size);
         Task<int> CurrentPlayerCount();
         Task<List<ActivityResponse>> GetAllActivities(int size);

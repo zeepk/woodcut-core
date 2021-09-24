@@ -23,6 +23,7 @@ namespace dotnet5_webapp.Repos
         Task<bool> UpdateRs3Rsn(string username, ApplicationUser user);
         Task<Player> UnfollowPlayer(Player player, ApplicationUser user);
         Task<ICollection<String>> GetFollowedPlayerNames(ApplicationUser user);
+        Task<ICollection<String>> GetPlayerNames();
         Task<ICollection<Activity>> GetFollowedPlayerActivities(ApplicationUser user, int size);
         Task<List<Player>> GetAllUsers();
         Task<List<Player>> GetAllTrackableUsers();

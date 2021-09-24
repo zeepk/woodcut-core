@@ -138,6 +138,12 @@ namespace dotnet5_webapp.Repos
                 .Include(f => f.Player)
                 .Select(f => f.Player.Username)
                 .ToListAsync();
+        }            
+        public async Task<ICollection<String>> GetPlayerNames()
+        {
+            return await Context.User
+                .Select(p => p.Username)
+                .ToListAsync();
         }        
         public async Task<ICollection<Activity>> GetFollowedPlayerActivities(ApplicationUser user, int size)
         {

@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using dotnet5_webapp.Internal;
 using dotnet5_webapp.Models;
 using dotnet5_webapp.Repos;
 using dotnet5_webapp.Utils;
 using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace dotnet5_webapp.Services
@@ -23,6 +22,7 @@ namespace dotnet5_webapp.Services
         static string imHiscoreUrl = Constants.RunescapeImApiBaseUrl;
         static string hcimHiscoreUrl = Constants.RunescapeHcimApiBaseUrl;
         static string playerCountUrl = Constants.RunescapeApiPlayerCount;
+        static string clanMemberListUrl = Constants.RunescapeApiClanMemberListUrl;
         static int totalSkills = Constants.TotalSkills + 1;
 
         public UserService(IUserRepo userRepo, IConfiguration configuration)
@@ -899,6 +899,49 @@ namespace dotnet5_webapp.Services
             response.Data = username;
 
             return response;
+        }        
+        public async Task<ResponseWrapper<ICollection<String>>> SeedPlayersFromClanMemberList(String clanName)
+        {
+            var response = new ResponseWrapper<ICollection<String>>
+            {
+                Success = true,
+                Status = ""
+            };
+            
+            var clanMemberData = await OfficialApiCall(clanMemberListUrl + clanName);
+            
+            if (clanMemberData == null)
+            {
+                response.Success = false;
+                response.Status = "Clan does not exist in the database.";
+                return response;
+            }
+
+            var clanMemberList = clanMemberData.Split("\n")
+                .Select(d => d
+                    .Split(",")
+                    .FirstOrDefault()
+                    .ToLower()
+                );
+            var memberNames = clanMemberList.Select(u => Regex.Replace(u, @"[^0-9a-zA-Z]+", " ")).ToList();
+            var currentPlayerNames = await _UserRepo.GetPlayerNames();
+            var playersToAdd = memberNames.Except(currentPlayerNames).ToList();
+            var createdPlayers = new List<String>();
+            
+            foreach (var p in playersToAdd)
+            {
+                var user = await CreateNewUser(p);
+                if (user != null)
+                {
+                    createdPlayers.Add(user.Username);
+                }
+            }
+            
+            // var tasks = playersToAdd.Select(u => CreateNewUser(u));
+            // await Task.WhenAll(tasks);
+
+            response.Data = createdPlayers;
+                return response;
         }
 
         public async Task<AccountType> GetAccountStatus(String username)

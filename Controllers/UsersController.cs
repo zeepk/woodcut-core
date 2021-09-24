@@ -326,6 +326,12 @@ namespace dotnet5_webapp.Controllers
         {
             var response = await UserService.GetIronStatus(username);
             return Ok(response);
+        }           
+        [HttpPost("seedclanmembers/{clan}")]
+        public async Task<ActionResult<ResponseWrapper<ICollection<String>>>> SeedPlayersFromClanMemberList(String clan)
+        {
+            var response = await UserService.SeedPlayersFromClanMemberList(clan);
+            return Ok(response);
         }   
 
         private bool UserExists(int id)
