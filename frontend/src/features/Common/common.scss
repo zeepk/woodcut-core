@@ -1,0 +1,217 @@
+@import '../../App.scss';
+.p-sidebar-content {
+	padding: 0 !important;
+}
+.container--home-text {
+	color: white;
+}
+.progressbar--follow {
+	width: 3rem;
+	height: 0.1rem !important;
+}
+.p-menubar.navbar {
+	background: #2c2f31;
+	border: none;
+
+	.icon--sidebar {
+		font-size: 1.2rem;
+		cursor: pointer;
+	}
+
+	&.p-menubar-mobile-active {
+		.p-menubar-root-list {
+			width: 100%;
+			height: 20rem;
+
+			.p-menuitem {
+				margin: 1rem;
+			}
+
+			.container--player-count {
+				min-width: 8rem;
+				margin-left: 4rem;
+
+				.player-count {
+					font-size: 1rem;
+				}
+			}
+
+			.container--search-form {
+				padding-left: 1.5rem;
+			}
+
+			.container--auth-buttons {
+				width: 100% !important;
+				padding-left: 1rem;
+			}
+		}
+	}
+
+	.p-menubar-button {
+		display: none;
+	}
+
+	.p-menubar-root-list {
+		width: 100%;
+
+		.container--search-form {
+			min-width: 8rem;
+			margin-left: auto;
+			margin-right: 1rem;
+		}
+	}
+	.navbar-item {
+		margin: 0 1rem;
+	}
+}
+.container--sidebar {
+	.nav-item {
+		width: 100%;
+
+		&.stripe {
+			background-color: $mediumGray;
+		}
+	}
+
+	.container--vos-content {
+		height: 6rem;
+		width: 14rem;
+
+		.container--vos-button {
+			width: 100%;
+
+			.btn--vos {
+				height: 2.5rem;
+				width: 5rem;
+			}
+		}
+
+		.progressbar--vos {
+			height: 0.3rem;
+			width: 100%;
+		}
+	}
+}
+.navbar-item {
+	color: white;
+	text-decoration: none;
+}
+.navbar-item:hover {
+	opacity: 0.75;
+}
+.img--logo {
+	max-height: 40px;
+	max-width: 40vw;
+}
+.icon--search {
+	background: url('../../assets/images/woodcutting_icon.png') no-repeat;
+	width: 20px;
+	height: 20px;
+}
+.fullscreen {
+	min-width: 100vw;
+	height: 80vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.fullscreen > i {
+	background-size: 4rem;
+	width: 4rem;
+	height: 5rem;
+	animation-duration: 0.5s;
+}
+.p-chip-image > img {
+	padding: 2px;
+	border-radius: 0 !important;
+	margin: 0 !important;
+	max-height: 1.8rem !important;
+	width: auto !important;
+}
+.p-progressbar.progressbar {
+	height: 0.1rem;
+	width: 90%;
+}
+.container--login-form-btn {
+	height: 2rem;
+}
+.container--create-form-btn {
+	height: 2rem;
+}
+.p-progressbar.progressbar--login-form {
+	height: 0.1rem;
+}
+.p-progressbar.progressbar--create-form {
+	height: 0.1rem;
+}
+.p-progressbar.progressbar--player-count {
+	height: 0.1rem;
+	width: 100%;
+}
+.btn--login-form {
+	width: 100%;
+}
+.btn--create-form {
+	width: 100%;
+}
+.container--account-settings {
+	width: 20rem;
+	max-width: 90vw;
+	height: 20rem;
+	max-height: 90vh;
+}
+@media (min-width: 500px) {
+	.container--footer {
+		position: fixed;
+	}
+}
+.container--footer {
+	bottom: 0;
+	width: 100vw;
+	max-height: 20vh;
+	background: $mediumGray;
+
+	.footer-link {
+		color: white;
+		text-decoration: none;
+		background: $mediumGray;
+
+		&:hover {
+			filter: brightness(190%);
+		}
+
+		&.twitter {
+			color: $linkBlue;
+		}
+		&.code {
+			color: silver;
+		}
+	}
+}
+.container--reset-form {
+	height: 80vh;
+
+	.text--error {
+		color: rgb(235, 125, 125);
+
+		&.hidden {
+			visibility: hidden;
+		}
+	}
+}
+.dialog {
+	width: 20rem;
+	max-width: 90vw;
+}
+.input--login {
+	input {
+		width: 100%;
+	}
+}
+.text--error {
+	color: rgb(235, 125, 125);
+
+	&.hidden {
+		visibility: hidden;
+	}
+}

@@ -1,0 +1,448 @@
+@import '../../App.scss';
+@media (max-width: 500px) {
+	.p-datatable {
+		width: 95vw;
+		overflow: scroll;
+
+		.p-datatable-wrapper {
+			width: 100% !important;
+
+			.grid {
+				width: 100% !important;
+			}
+		}
+
+		.column--icon {
+			width: 1rem !important;
+			color: transparent;
+		}
+
+		.column--other-gains {
+			width: 10rem !important;
+		}
+	}
+}
+.icon--iron {
+	min-width: 15px;
+}
+.container--chart {
+	width: 25rem;
+	max-width: 95vw;
+
+	.container--switch {
+		width: 100%;
+
+		.text--switch-label {
+			width: 8rem;
+			color: gray;
+
+			&.active {
+				color: white;
+			}
+		}
+	}
+}
+.container--player-details {
+	margin-bottom: 5rem;
+	max-width: 95vw;
+
+	.btn--compare {
+		background-color: rgb(177, 148, 177);
+		border-color: rgb(187, 137, 187);
+
+		&:hover {
+			background: rgb(187, 137, 187) !important;
+			border-color: rgb(187, 137, 187) !important;
+		}
+	}
+
+	.container--details-data {
+		max-width: 95vw;
+
+		.container--details-charts {
+			width: 100%;
+		}
+	}
+	.container--details-activities {
+		max-width: 95vw;
+		width: 25rem;
+		color: white;
+
+		.progressbar--player-details-activities {
+			height: 0.3rem;
+			width: 80%;
+		}
+	}
+}
+h1 {
+	color: #fff;
+}
+.container--player-info {
+	color: #fff;
+
+	.icon--iron {
+		height: 1.5rem;
+		max-width: 100%;
+	}
+
+	.container--badges {
+		margin-top: 0.2rem;
+	}
+
+	.container--avatar {
+		height: 80px;
+		width: 80px;
+
+		.img--avatar {
+			height: 80px;
+			width: 80px;
+		}
+	}
+}
+.icon--player-info {
+	height: 1.5rem;
+	margin-bottom: -4px;
+}
+.p-datatable {
+	margin-bottom: 5rem;
+
+	.p-datatable-thead {
+		top: 0;
+		position: sticky;
+	}
+
+	.gain {
+		color: $gainzGreen;
+	}
+	.column--icon {
+		width: 5rem;
+
+		.body--icon > img {
+			margin-right: 1rem;
+			width: 1.8rem;
+		}
+	}
+	.column--xp {
+		width: 8rem;
+	}
+	.column--level {
+		width: 6rem;
+	}
+	.column--rank {
+		width: 6rem;
+	}
+	.column--day {
+		width: 6rem;
+	}
+	.header--other-gains {
+		min-width: 8rem;
+	}
+	.column--other-gains {
+		width: 6rem;
+	}
+}
+.tab--quest-icon {
+	content: url('../../assets/images/questIcon.png');
+	height: 1rem;
+}
+.tab--skills-icon {
+	content: url('../../assets/skillIcons/1_overall.png');
+	height: 1rem;
+}
+.text--no-rsn {
+	color: white;
+}
+.container--logged-out-user {
+	color: white;
+
+	.container--half {
+		padding-top: 10vh;
+		width: 100%;
+		.container--home-buttons {
+			.btn--create {
+				margin-left: 1rem;
+			}
+		}
+
+		.container--list {
+			width: 30rem;
+		}
+
+		.container--home-text {
+			max-height: 20rem;
+			max-width: 85%;
+
+			.text--home-content {
+				font-size: clamp(1.3rem, 2vw, 1.8rem);
+				font-weight: 600;
+				color: white;
+				text-decoration: none;
+
+				&.twitter {
+					color: $linkBlue;
+
+					&:hover {
+						text-decoration: underline;
+					}
+				}
+			}
+		}
+
+		.progressbar--activity-list {
+			height: 0.5rem;
+			width: 20rem;
+		}
+	}
+}
+.container--logged-in-user {
+	color: white;
+
+	.container--player-info {
+		width: 25rem;
+		max-width: 95vw;
+	}
+
+	.container--home-bottom {
+		width: 100vw;
+		margin-top: 5rem;
+
+		.container--home-gains {
+			max-width: 70rem;
+
+			.column--icon {
+				width: 9rem;
+			}
+		}
+
+		.progressbar--gains {
+			height: 0.5rem;
+			width: 90%;
+			margin: 10rem 0;
+		}
+	}
+
+	.container--home-info {
+		height: 12rem;
+	}
+
+	.container--name-clan {
+		max-width: 25rem;
+		width: 80vw;
+
+		.container--clan {
+			.img--home-clan-flag {
+				max-width: 40vw;
+			}
+		}
+	}
+
+	.container--home-list {
+		border-radius: 1rem;
+		border: 1px solid gray;
+		width: 25rem;
+		max-width: 90vw;
+		height: 40rem;
+		max-height: 90vh;
+
+		&.activities {
+			width: 28vw;
+			min-width: 20rem;
+			max-width: 30rem;
+
+			.container--list {
+				height: 100%;
+			}
+		}
+
+		&.gains {
+			width: 28vw;
+			min-width: 20rem;
+			max-width: 30rem;
+		}
+
+		.text--list-title {
+			background-color: #2c2f31;
+			text-align: center;
+			width: 100%;
+			border-radius: 1rem 1rem 0 0;
+		}
+
+		.progressbar--activity-list {
+			height: 0.5rem;
+			width: 20rem;
+		}
+	}
+}
+.container--list {
+	max-width: 90vw;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	width: 100%;
+
+	&.gains {
+		height: 40rem;
+		min-width: 80%;
+
+		.container--gain {
+			width: 100%;
+			border-top: 1px solid silver;
+
+			.text--gain {
+				color: $gainzGreen;
+			}
+
+			.container--icon > img {
+				width: 2.5rem;
+			}
+		}
+	}
+
+	&.activities {
+		height: 60vh;
+		.container--activity-outer {
+			border-top: 1px solid silver;
+			width: 100%;
+
+			.link--user {
+				width: 100%;
+
+				&:hover {
+					filter: brightness(130%);
+				}
+
+				.container--activity {
+					.container--user {
+						height: 3rem;
+
+						.text--username {
+							min-width: 4.5rem;
+						}
+					}
+
+					.icon--iron {
+						&.im {
+							height: 0.8rem;
+						}
+						&.hcim {
+							height: 1rem;
+						}
+					}
+
+					.container--avatar {
+						height: 2.2rem;
+						width: 2.2rem;
+
+						.img--avatar {
+							height: 2.2rem;
+							width: 2.2rem;
+						}
+					}
+
+					.container--entry {
+						min-height: 3rem;
+						text-align: right;
+
+						.text--date {
+							font-size: 0.7rem;
+							width: 8rem;
+						}
+
+						.text--price {
+							font-size: 0.7rem;
+							color: $gainzGreen;
+						}
+
+						.img--activity-icon {
+							max-width: 2rem;
+							max-height: 2rem;
+						}
+					}
+
+					.progressbar--activity {
+						height: 0.2rem;
+					}
+				}
+			}
+
+			.container--likes {
+				cursor: pointer;
+				color: white;
+
+				&.active {
+					color: orange;
+				}
+			}
+		}
+	}
+}
+.link--user {
+	color: white;
+	text-decoration: none;
+
+	.container--avatar {
+		height: 6rem;
+		width: 6rem;
+
+		.img--avatar {
+			height: 6rem;
+			width: 6rem;
+		}
+	}
+}
+.container--comparison {
+	color: white;
+
+	.container--player-names {
+		width: 100%;
+
+		.container--player {
+			width: 50%;
+
+			.icon--iron {
+				&.im {
+					margin-top: 0.8rem;
+					height: 1.3rem;
+				}
+				&.hcim {
+					margin-top: 0.5rem;
+					height: 1.5rem;
+				}
+			}
+		}
+	}
+
+	.progressbar {
+		height: 3rem;
+	}
+
+	.p-datatable {
+		.column--name {
+			text-align: center;
+		}
+
+		.right {
+			text-align: right;
+		}
+
+		.column--icon {
+			.body--icon > img {
+				margin-right: 0;
+			}
+
+			.icon--higher {
+				&.hidden {
+					visibility: hidden;
+				}
+			}
+		}
+	}
+}
+.container--avatar {
+	img {
+		height: 80px;
+		width: 80px;
+	}
+	.progressbar--avatar {
+		height: 0.2rem;
+	}
+}
