@@ -1,6 +1,1 @@
-# woodcut-core
-Back end for Woodcut stat tracker
-
-# Endpoints
-- `/api/users` - returns list of all users in database, does not include stat records (size concerns)
-- `/api/users/username` - returns user object with name username of "username" including stat records
+This code has been migrated to [a consolidated repository](https://github.com/zeepk/woodcut) under the `/backend` subdirectory.
